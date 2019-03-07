@@ -370,7 +370,7 @@ div.section {
 </li>
 <li>
 <details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> 934cda8 </summary></p>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/tree/67d58f327a0aef60ee00d3372a21b65850a02ee3" target="_blank">67d58f3</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
@@ -379,36 +379,18 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
-
-Untracked files:
-    Untracked:  analysis/README.md
-    Untracked:  analysis/queen_pheromone.Rmd
-    Untracked:  bioinformatics scripts/
-    Untracked:  code/Script to make the donut plot.R
-    Untracked:  code/Script to run multivariate brms model.R
-    Untracked:  code/Script to set up for GO analyses.R
-    Untracked:  code/pdf_supplementary_material.Rmd
-    Untracked:  code/pdf_supplementary_material.pdf
-    Untracked:  code/wojciechowski_histone_analysis.R
-    Untracked:  data/apis.org.db
-    Untracked:  data/apis_gene_comparisons/
-    Untracked:  data/brms_model.txt
-    Untracked:  data/brms_model_comparisons.rds
-    Untracked:  data/brms_model_summary.rds
-    Untracked:  data/component spreadsheets of queen_pheromone.db/
-    Untracked:  data/gene_set_collection.RData
-    Untracked:  data/gene_set_collection_kegg.RData
-    Untracked:  data/morandin_comparison_data/
-    Untracked:  data/most.pheromone.sensitive.genes.rds
-    Untracked:  data/queen_pheromone.db
-    Untracked:  docs/figure/
-    Untracked:  figures/
-    Untracked:  manuscript/
-    Untracked:  supplement/
+    Ignored:    data/apis_gene_comparisons/.DS_Store
+    Ignored:    data/apis_gene_comparisons/wojciechowski_histone_data/.DS_Store
+    Ignored:    data/apis_gene_comparisons/wojciechowski_histone_data/GSE110640_RAW/.DS_Store
+    Ignored:    data/apis_gene_comparisons/wojciechowski_histone_data/GSE110641_RAW/.DS_Store
+    Ignored:    data/component spreadsheets of queen_pheromone.db/.DS_Store
+    Ignored:    docs/figure/pdf_supplementary_material.Rmd/
+    Ignored:    figures/
+    Ignored:    manuscript/
+    Ignored:    supplement/
 
 Unstaged changes:
     Modified:   .gitignore
-    Deleted:    data/README.md
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
@@ -441,10 +423,27 @@ Message
 <tbody>
 <tr>
 <td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/lukeholman/queen-pheromone-RNAseq/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/statistical-analysis.html" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 Rmd
 </td>
 <td style="text-align:left;">
-934cda8
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/934cda866c28b00edf31a737f465959b013953bc/analysis/statistical-analysis.Rmd" target="_blank">934cda8</a>
 </td>
 <td style="text-align:left;">
 Luke Holman
@@ -597,7 +596,39 @@ fig_S1 &lt;- data.frame(id = rownames(expression.data), nmds.output$conf[[length
 
 saveRDS(fig_S1, file = &quot;supplement/fig_S1.rds&quot;)
 fig_S1</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/outliers-1.png" width="672" style="display: block; margin: auto;" /> <br/><br/> <strong>Figure S1</strong>: After reducing the transcriptome data to two axes using non-metric multidimensional scaling, four <em>Lasius</em> samples were clear outliers.</p>
+<p><img src="figure/statistical-analysis.Rmd/outliers-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of outliers-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/outliers-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br/><br/> <strong>Figure S1</strong>: After reducing the transcriptome data to two axes using non-metric multidimensional scaling, four <em>Lasius</em> samples were clear outliers.</p>
 <pre class="r"><code>set.seed(1) # nmds involves random numbers, so make this plot reproducible
 expression.data &lt;- make.OGGs(c(&quot;am&quot;, &quot;bt&quot;, &quot;ln&quot;, &quot;lf&quot;), bad.samples = bad.samples)[[1]]
 
@@ -614,7 +645,39 @@ fig_S2 &lt;- data.frame(id = rownames(expression.data),
 
 saveRDS(fig_S2, file = &quot;supplement/fig_S2.rds&quot;)
 fig_S2</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/no.outliers-1.png" width="672" style="display: block; margin: auto;" /> <br/><br/> <strong>Figure S2</strong>: With the four problematic samples removed, the samples cluster according to species with no obvious outliers.</p>
+<p><img src="figure/statistical-analysis.Rmd/no.outliers-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of no.outliers-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/no.outliers-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br/><br/> <strong>Figure S2</strong>: With the four problematic samples removed, the samples cluster according to species with no obvious outliers.</p>
 </div>
 </div>
 <div id="table-of-sample-sizes" class="section level2">
@@ -12241,6 +12304,37 @@ heat.map.figure &lt;- species.combinations %&gt;% ggplot(aes(Species1, Species2,
   scale_y_discrete(labels = c(&quot;Bombus\nterrestris&quot;, &quot;Lasius\nflavus&quot;, &quot;Lasius\nniger&quot;), expand = c(0,0)) 
 heat.map.figure</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-15-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-15-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
 <pre class="r"><code>ggsave(heat.map.figure, file = &quot;figures/Correlations heat map.pdf&quot;, height = 4, width=4.3)</code></pre>
 <pre class="r"><code># Make a scatterplot showing the correlations
 combos &lt;- t(combn(c(&quot;am&quot;, &quot;bt&quot;, &quot;lf&quot;, &quot;ln&quot;), 2))
@@ -12266,7 +12360,39 @@ fig_S3 &lt;- scatter_plot_data %&gt;%
 
 saveRDS(fig_S3, file = &quot;supplement/fig_S3.rds&quot;)
 fig_S3</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-16-1.png" width="576" style="display: block; margin: auto;" /> <br/><br/> <strong>Figure S3</strong>: Each scatterplot shows the correlation in pheromone sensitivity across pairs of orthologous genes, for each of the six possible species pairs. Species 1 refers to the first-listed species, such that in the top-left panel, <em>Apis mellifera</em> is plotted on the x-axis and <em>Bombus terrestris</em> is on the y-axis. The regression lines are from a simple linear regression, and the grey zone around the line shows its 95% confidence intervals.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-16-1.png" width="576" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-16-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-16-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br/><br/> <strong>Figure S3</strong>: Each scatterplot shows the correlation in pheromone sensitivity across pairs of orthologous genes, for each of the six possible species pairs. Species 1 refers to the first-listed species, such that in the top-left panel, <em>Apis mellifera</em> is plotted on the x-axis and <em>Bombus terrestris</em> is on the y-axis. The regression lines are from a simple linear regression, and the grey zone around the line shows its 95% confidence intervals.</p>
 </div>
 </div>
 <div id="identifying-genes-that-splice-differently-following-queen-pheromone-treatment" class="section level2">
@@ -12293,7 +12419,39 @@ fig_S3</code></pre>
 
 saveRDS(fig_S4, file = &quot;supplement/fig_S4.rds&quot;)
 fig_S4</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /> <br/><br/> <strong>Figure S4</strong>: Distribution of isoform numbers per gene for each of the four species.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-17-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-17-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br/><br/> <strong>Figure S4</strong>: Distribution of isoform numbers per gene for each of the four species.</p>
 <pre class="r"><code># Define a function to search for significantly alternatively spliced genes. We define these as genes that have at least two differentially expressed isoforms, where queen pheromone stimulates expresison of one isoform but surpresses expression of another
 find.alternatively.spliced.genes &lt;- function(species){
 
@@ -15808,6 +15966,37 @@ XP_016767817.1
 ln.alt &lt;- ln.alt.splice$Name[ln.alt.splice$Name != &quot; &quot;]
 venn(list(Apis = am.alt.splice$Name,`L. flavus` = lf.alt,`L. niger` = ln.alt))</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/splice.venn-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of splice.venn-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/splice.venn-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
 </div>
 </div>
 <div id="gene-co-expression-network-analysis" class="section level2">
@@ -15974,6 +16163,37 @@ treatments.network.plot &lt;- function(dat){
 
 eigen.data %&gt;% treatments.network.plot()</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-20-1.png" width="864" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-20-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-20-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
 <pre class="r"><code>ggsave(eigen.data %&gt;% treatments.network.plot(), 
        file = &quot;figures/Figure 3 - Module eigengenes.pdf&quot;, height = 6.6, width = 8)</code></pre>
 <p><br/><br/> <strong>Figure 3</strong>: The figure shows the distribution of module eigengenes for each combination of module, species, and queen pheromone (QP) treatment. Positive values mean that the focal group has higher eigengenes, which derived from the relative expression levels of a module of genes, than the average.</p>
@@ -16198,7 +16418,39 @@ eigen.data %&gt;% treatments.network.plot()</code></pre>
 }
 
 meta.module.plot(network)</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-23-1.png" width="576" style="display: block; margin: auto;" /> <br/><br/> Dendrogram and heat map showing the correlations among module eigengene values and the queen pheromone treatment (QP; coded as zero and 1 for the control and treatment respectively). Modules with red colour, or which are close on the dendrogram, show more correlated expression. The queen pheromone treatment was correlated with Module 5, but was relatively uncorrelated with the other modules.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-23-1.png" width="576" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-23-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-23-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br/><br/> Dendrogram and heat map showing the correlations among module eigengene values and the queen pheromone treatment (QP; coded as zero and 1 for the control and treatment respectively). Modules with red colour, or which are close on the dendrogram, show more correlated expression. The queen pheromone treatment was correlated with Module 5, but was relatively uncorrelated with the other modules.</p>
 <p><strong>Table S16</strong>: Results of Spearman’s rank correlations testing for a relationship between the effect of queen pheromone on gene expression, and the connectedness of the gene. Negative values of Spearman’s Rho mean that highly pheromone-sensitive genes tend to have lower connectedness.</p>
 <pre class="r"><code>load(&quot;blockwiseTOM-block.1.RData&quot;) # Load the TOM from the network analysis - can be used to find connectedness for each ortholog
 
@@ -16388,7 +16640,39 @@ correlation.plot &lt;- cor.matrix %&gt;%
                           legend.position = &quot;none&quot;) 
 ggsave(correlation.plot, file = &quot;figures/Figure 5 - correlations.pdf&quot;, width = 8, height = 8)
 correlation.plot</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-24-1.png" width="864" style="display: block; margin: auto;" /> <br/><br/> <strong>Figure 5</strong>: Spearman correlations for various gene-level measurements from the present study and earlier research, for <em>Apis mellifera</em> (measurements from the present study are shown in bold). ‘Pheromone sensitivity’ was calculated as the absolute value of the Log<span class="math inline">\(_2\)</span> fold difference in expression between pheromone treatment and the control. Expression level shows the logarithm of the average across our 6 <em>Apis</em> libraries. For the ‘Upregulation in queens/fertile workers’ data (Grozinger et al. 2007), positive values denote genes that have higher expression in queens or fertile workers, relative to sterile workers. For the three histone modification variables (Wojciechowski et al. 2018), high values indicate that the modification is more abundant in queen-destined larvae, and low values indicate it is more abundant in worker-destined larvae. The two DNA methylation variables give two different measures of the amount of gene body DNA methylation, namely an indirect measure (-log CpG O/E ratio) and a direct measure (BiS-seq, Galbraith et al. 2016). Codon usage bias was estimated using the codon adaptation index: high values indicate bias for particular synonymous codons. Lastly, the parameter gamma (<span class="math inline">\(\gamma\)</span>) describes the form of selection, where positive values denote positive selection, and negative values purifying selection (data from Hunt et al. 2014).</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-24-1.png" width="864" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-24-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-24-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br/><br/> <strong>Figure 5</strong>: Spearman correlations for various gene-level measurements from the present study and earlier research, for <em>Apis mellifera</em> (measurements from the present study are shown in bold). ‘Pheromone sensitivity’ was calculated as the absolute value of the Log<span class="math inline">\(_2\)</span> fold difference in expression between pheromone treatment and the control. Expression level shows the logarithm of the average across our 6 <em>Apis</em> libraries. For the ‘Upregulation in queens/fertile workers’ data (Grozinger et al. 2007), positive values denote genes that have higher expression in queens or fertile workers, relative to sterile workers. For the three histone modification variables (Wojciechowski et al. 2018), high values indicate that the modification is more abundant in queen-destined larvae, and low values indicate it is more abundant in worker-destined larvae. The two DNA methylation variables give two different measures of the amount of gene body DNA methylation, namely an indirect measure (-log CpG O/E ratio) and a direct measure (BiS-seq, Galbraith et al. 2016). Codon usage bias was estimated using the codon adaptation index: high values indicate bias for particular synonymous codons. Lastly, the parameter gamma (<span class="math inline">\(\gamma\)</span>) describes the form of selection, where positive values denote positive selection, and negative values purifying selection (data from Hunt et al. 2014).</p>
 </div>
 <div id="contrasting-our-lasius-data-with-results-from-morandin-et-al.-2016" class="section level2">
 <h2>Contrasting our <em>Lasius</em> data with results from Morandin <em>et al.</em> 2016</h2>
@@ -17480,7 +17764,39 @@ GO_and_KEGG_results_GSEA &lt;- rbind(
 figure2 &lt;- make_enrichment_heatmap(GO_and_KEGG_results_GSEA, pval_cutoff = 0.05)
 ggsave(figure2, file = &quot;figures/Figure 2 - GO and KEGG.pdf&quot;, height = 11.8, width = 9.5)
 grid.draw(figure2)</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-28-1.png" width="864" style="display: block; margin: auto;" /> <strong>Figure 2</strong>: A list of all the Gene Ontology (GO) and Kyoto Encyclopedia of Genes and Genomes (KEGG) terms that were significantly enriched or de-enriched among pheromone-sensitive genes in at least one of the four species. The colour shows the normalised expression score from gene set enrichment analysis; positive (red) values indicate that the ontology term is over-represented among genes whose expression is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among these genes. Asterisks denote statistically significant enrichment (p &lt; 0.05), and double asterisks mark results that remained significant after Benjamini-Hochberg correction. Empty squares denote cases where we did not find at least 5 genes annotated with the focal term.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-28-1.png" width="864" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-28-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-28-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><strong>Figure 2</strong>: A list of all the Gene Ontology (GO) and Kyoto Encyclopedia of Genes and Genomes (KEGG) terms that were significantly enriched or de-enriched among pheromone-sensitive genes in at least one of the four species. The colour shows the normalised expression score from gene set enrichment analysis; positive (red) values indicate that the ontology term is over-represented among genes whose expression is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among these genes. Asterisks denote statistically significant enrichment (p &lt; 0.05), and double asterisks mark results that remained significant after Benjamini-Hochberg correction. Empty squares denote cases where we did not find at least 5 genes annotated with the focal term.</p>
 </div>
 <div id="tabular-results-for-gsea-for-pheromone-sensitivity-in-gene-expression" class="section level3 tabset">
 <h3>Tabular results for GSEA for pheromone sensitivity in gene expression</h3>
@@ -17626,7 +17942,7 @@ GO: Biological process
 0.0327906
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.461421
@@ -17652,7 +17968,7 @@ GO: Biological process
 0.0447761
 </td>
 <td style="text-align:right;">
-0.1396648
+0.1399723
 </td>
 <td style="text-align:right;">
 -1.457013
@@ -17704,7 +18020,7 @@ GO: Cellular component
 0.0363014
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 -1.536247
@@ -17730,7 +18046,7 @@ GO: Cellular component
 0.0384615
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 -1.636964
@@ -17756,7 +18072,7 @@ GO: Cellular component
 0.0444840
 </td>
 <td style="text-align:right;">
-0.1396648
+0.1399723
 </td>
 <td style="text-align:right;">
 -1.464557
@@ -17886,7 +18202,7 @@ GO: Molecular function
 0.0104651
 </td>
 <td style="text-align:right;">
-0.0843961
+0.0872093
 </td>
 <td style="text-align:right;">
 -1.667797
@@ -17912,7 +18228,7 @@ GO: Molecular function
 0.0124725
 </td>
 <td style="text-align:right;">
-0.0917095
+0.0944885
 </td>
 <td style="text-align:right;">
 1.537033
@@ -18016,7 +18332,7 @@ KEGG:04711
 0.0373726
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 -1.477501
@@ -18114,7 +18430,7 @@ GO: Biological process
 0.0121690
 </td>
 <td style="text-align:right;">
-0.0917095
+0.0944885
 </td>
 <td style="text-align:right;">
 1.588706
@@ -18140,7 +18456,7 @@ GO: Biological process
 0.0364964
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 -1.381094
@@ -18166,7 +18482,7 @@ GO: Biological process
 0.0417827
 </td>
 <td style="text-align:right;">
-0.1356582
+0.1374432
 </td>
 <td style="text-align:right;">
 -1.376223
@@ -18189,13 +18505,13 @@ GO: Biological process
 <a href="GO:0042742" class="uri">GO:0042742</a>
 </td>
 <td style="text-align:right;">
-0.0460037
+0.0467911
 </td>
 <td style="text-align:right;">
-0.1396648
+0.1399723
 </td>
 <td style="text-align:right;">
-1.472751
+1.473092
 </td>
 <td style="text-align:left;">
 406143 406140 100576745 725074
@@ -18400,7 +18716,7 @@ GO: Molecular function
 0.0097652
 </td>
 <td style="text-align:right;">
-0.0834834
+0.0863622
 </td>
 <td style="text-align:right;">
 1.605581
@@ -18426,7 +18742,7 @@ GO: Molecular function
 0.0097652
 </td>
 <td style="text-align:right;">
-0.0834834
+0.0863622
 </td>
 <td style="text-align:right;">
 1.605581
@@ -18452,7 +18768,7 @@ GO: Molecular function
 0.0097652
 </td>
 <td style="text-align:right;">
-0.0834834
+0.0863622
 </td>
 <td style="text-align:right;">
 1.605581
@@ -18478,7 +18794,7 @@ GO: Molecular function
 0.0097652
 </td>
 <td style="text-align:right;">
-0.0834834
+0.0863622
 </td>
 <td style="text-align:right;">
 1.605581
@@ -18530,7 +18846,7 @@ GO: Molecular function
 0.0305000
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.305352
@@ -18556,7 +18872,7 @@ GO: Molecular function
 0.0451943
 </td>
 <td style="text-align:right;">
-0.1396648
+0.1399723
 </td>
 <td style="text-align:right;">
 1.394571
@@ -18582,7 +18898,7 @@ GO: Molecular function
 0.0468442
 </td>
 <td style="text-align:right;">
-0.1396648
+0.1399723
 </td>
 <td style="text-align:right;">
 1.460218
@@ -18634,7 +18950,7 @@ KEGG:00910
 0.0149136
 </td>
 <td style="text-align:right;">
-0.0962817
+0.0960980
 </td>
 <td style="text-align:right;">
 1.563268
@@ -18686,7 +19002,7 @@ KEGG:00360
 0.0333296
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.499087
@@ -18784,7 +19100,7 @@ GO: Biological process
 0.0144071
 </td>
 <td style="text-align:right;">
-0.0962817
+0.0960980
 </td>
 <td style="text-align:right;">
 1.597910
@@ -18807,13 +19123,13 @@ GO: Biological process
 <a href="GO:0042742" class="uri">GO:0042742</a>
 </td>
 <td style="text-align:right;">
-0.0150199
+0.0149913
 </td>
 <td style="text-align:right;">
-0.0962817
+0.0960980
 </td>
 <td style="text-align:right;">
-1.557074
+1.568669
 </td>
 <td style="text-align:left;">
 406142 406143
@@ -18940,7 +19256,7 @@ GO: Cellular component
 0.0144522
 </td>
 <td style="text-align:right;">
-0.0962817
+0.0960980
 </td>
 <td style="text-align:right;">
 1.577040
@@ -19018,7 +19334,7 @@ GO: Cellular component
 0.0356894
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.478919
@@ -19041,13 +19357,13 @@ GO: Molecular function
 <a href="GO:0004984" class="uri">GO:0004984</a>
 </td>
 <td style="text-align:right;">
-0.0090171
+0.0145388
 </td>
 <td style="text-align:right;">
-0.0834834
+0.0960980
 </td>
 <td style="text-align:right;">
-1.444495
+1.453275
 </td>
 <td style="text-align:left;">
 725384 725205
@@ -19148,7 +19464,7 @@ GO: Molecular function
 0.0315236
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 -1.577174
@@ -19174,7 +19490,7 @@ GO: Molecular function
 0.0344271
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.495474
@@ -19200,7 +19516,7 @@ GO: Molecular function
 0.0396585
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.478584
@@ -19226,7 +19542,7 @@ GO: Molecular function
 0.0396585
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.478584
@@ -19252,7 +19568,7 @@ GO: Molecular function
 0.0396585
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.478584
@@ -19278,7 +19594,7 @@ GO: Molecular function
 0.0396585
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.478584
@@ -19330,7 +19646,7 @@ KEGG:04080
 0.0118545
 </td>
 <td style="text-align:right;">
-0.0917095
+0.0944885
 </td>
 <td style="text-align:right;">
 1.560081
@@ -19356,7 +19672,7 @@ KEGG:00061
 0.0370928
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.479387
@@ -19382,7 +19698,7 @@ KEGG:00640
 0.0382217
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.427875
@@ -19408,7 +19724,7 @@ KEGG:00790
 0.0383548
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.466181
@@ -19532,7 +19848,7 @@ GO: Biological process
 0.0397614
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 1.449365
@@ -19578,39 +19894,13 @@ protein SEC13 homolog; carbohydrate sulfotransferase 11-like; protein transport 
 GO: Cellular component
 </td>
 <td style="text-align:left;">
-<a href="GO:0005680" class="uri">GO:0005680</a>
-</td>
-<td style="text-align:right;">
-0.0401575
-</td>
-<td style="text-align:right;">
-0.1338583
-</td>
-<td style="text-align:right;">
--1.498393
-</td>
-<td style="text-align:left;">
-413499 413293 409810
-</td>
-<td style="text-align:left;">
-anaphase-promoting complex
-</td>
-<td style="text-align:left;">
-cell division cycle protein 23 homolog; anaphase-promoting complex subunit 10; anaphase-promoting complex subunit 4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GO: Cellular component
-</td>
-<td style="text-align:left;">
 <a href="GO:0005576" class="uri">GO:0005576</a>
 </td>
 <td style="text-align:right;">
 0.0412082
 </td>
 <td style="text-align:right;">
-0.1355534
+0.1373608
 </td>
 <td style="text-align:right;">
 1.321417
@@ -19623,6 +19913,32 @@ extracellular region
 </td>
 <td style="text-align:left;">
 uncharacterized protein PFB0145c-like; bone morphogenetic protein 2-B; growth/differentiation factor 2-like; phospholipase A1; prohormone-4; cuticular protein analogous to peritrophins 3-D; chondroitin proteoglycan-2-like; tachykinin; prohormone-2; probable chitinase 3; uncharacterized LOC413560; allatostatin A; cysteine-rich venom protein-like; insulin-like peptide 2; uncharacterized LOC724563
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GO: Cellular component
+</td>
+<td style="text-align:left;">
+<a href="GO:0005680" class="uri">GO:0005680</a>
+</td>
+<td style="text-align:right;">
+0.0470307
+</td>
+<td style="text-align:right;">
+0.1399723
+</td>
+<td style="text-align:right;">
+-1.492933
+</td>
+<td style="text-align:left;">
+413499 413293 409810
+</td>
+<td style="text-align:left;">
+anaphase-promoting complex
+</td>
+<td style="text-align:left;">
+cell division cycle protein 23 homolog; anaphase-promoting complex subunit 10; anaphase-promoting complex subunit 4
 </td>
 </tr>
 <tr>
@@ -19714,7 +20030,7 @@ GO: Molecular function
 0.0100180
 </td>
 <td style="text-align:right;">
-0.0834834
+0.0863622
 </td>
 <td style="text-align:right;">
 1.587925
@@ -19766,7 +20082,7 @@ GO: Molecular function
 0.0307918
 </td>
 <td style="text-align:right;">
-0.1338583
+0.1343292
 </td>
 <td style="text-align:right;">
 -1.532409
@@ -19792,7 +20108,7 @@ GO: Molecular function
 0.0457143
 </td>
 <td style="text-align:right;">
-0.1396648
+0.1399723
 </td>
 <td style="text-align:right;">
 -1.483124
@@ -19844,7 +20160,7 @@ KEGG:03050
 0.0129090
 </td>
 <td style="text-align:right;">
-0.0922074
+0.0949194
 </td>
 <td style="text-align:right;">
 1.475489
@@ -19896,7 +20212,7 @@ KEGG:00260
 0.0469274
 </td>
 <td style="text-align:right;">
-0.1396648
+0.1399723
 </td>
 <td style="text-align:right;">
 1.401367
@@ -20077,7 +20393,39 @@ splicing_correlations %&gt;% pander(split.cell = 40, split.table = Inf)</code></
 <pre class="r"><code>fig_S5 &lt;- GO_and_KEGG_splicing_GSEA %&gt;% make_enrichment_heatmap()
 saveRDS(fig_S5, file = &quot;supplement/fig_S5.rds&quot;)
 fig_S5 %&gt;% grid.draw()</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-35-1.png" width="768" style="display: block; margin: auto;" /> <br></br> <strong>Figure S5</strong>: Genes for which alternative splicing is strongly affected by queen pheromone tend to have similar Gene Ontology and KEGG terms in ants and bees, although the data do not provide strong evidence for or against inter-species similarity. The colour shows the normalised expression score from a GSEA (gene set enrichment analysis) test implemented in the R package <code>fgsea</code>; positive (red) values indicate that the GO or KEGG term is over-represented among genes whose splicing is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among those genes. Asterisks denote statistically significant enrichment (p &lt; 0.05), and double asterisks mark results that remained significant after adjusting the p-values for multiple testing using the Benjamini-Hochberg method. Empty squares denote cases where we did not find at least 5 alternatively spliced genes annotated with the focal term.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-35-1.png" width="768" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-35-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-35-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br></br> <strong>Figure S5</strong>: Genes for which alternative splicing is strongly affected by queen pheromone tend to have similar Gene Ontology and KEGG terms in ants and bees, although the data do not provide strong evidence for or against inter-species similarity. The colour shows the normalised expression score from a GSEA (gene set enrichment analysis) test implemented in the R package <code>fgsea</code>; positive (red) values indicate that the GO or KEGG term is over-represented among genes whose splicing is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among those genes. Asterisks denote statistically significant enrichment (p &lt; 0.05), and double asterisks mark results that remained significant after adjusting the p-values for multiple testing using the Benjamini-Hochberg method. Empty squares denote cases where we did not find at least 5 alternatively spliced genes annotated with the focal term.</p>
 </div>
 <div id="tabular-results-for-gsea-for-pheromone-sensitivity-of-alternative-splicing" class="section level3">
 <h3>Tabular results for GSEA for pheromone sensitivity of alternative splicing</h3>
@@ -20309,7 +20657,7 @@ KEGG:04310
 0.0231533
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.393171
@@ -20338,7 +20686,7 @@ KEGG:00250
 0.0251192
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.478191
@@ -20393,13 +20741,13 @@ GO: Biological process
 <a href="GO:0007034" class="uri">GO:0007034</a>
 </td>
 <td style="text-align:right;">
-0.0295359
+0.0223523
 </td>
 <td style="text-align:right;">
-0.1197843
+0.1145620
 </td>
 <td style="text-align:right;">
--1.609457
+-1.593805
 </td>
 <td style="text-align:left;">
 550738 411857 410607 410883
@@ -20425,7 +20773,7 @@ GO: Biological process
 0.0449834
 </td>
 <td style="text-align:right;">
-0.1511843
+0.1531553
 </td>
 <td style="text-align:right;">
 1.363095
@@ -20454,7 +20802,7 @@ GO: Biological process
 0.0476190
 </td>
 <td style="text-align:right;">
-0.1511843
+0.1531553
 </td>
 <td style="text-align:right;">
 -1.428849
@@ -20480,13 +20828,13 @@ GO: Cellular component
 <a href="GO:0005886" class="uri">GO:0005886</a>
 </td>
 <td style="text-align:right;">
-0.0025010
+0.0031019
 </td>
 <td style="text-align:right;">
-0.0656451
+0.0725780
 </td>
 <td style="text-align:right;">
-1.543777
+1.542200
 </td>
 <td style="text-align:left;">
 100578210 100577938 100577446 100577755 725297 100578083 100577334 411760 100578230 725205 551782
@@ -20570,7 +20918,7 @@ GO: Molecular function
 0.0227273
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 -1.444564
@@ -20599,7 +20947,7 @@ GO: Molecular function
 0.0267296
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.453553
@@ -20625,13 +20973,13 @@ GO: Molecular function
 <a href="GO:0004252" class="uri">GO:0004252</a>
 </td>
 <td style="text-align:right;">
-0.0476334
+0.0482544
 </td>
 <td style="text-align:right;">
-0.1511843
+0.1531553
 </td>
 <td style="text-align:right;">
-1.401921
+1.402047
 </td>
 <td style="text-align:left;">
 726126 410438 724145 413645 724917 410894 724308 411358 409143 726718
@@ -20686,7 +21034,7 @@ KEGG:04214
 0.0177298
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.471707
@@ -20715,7 +21063,7 @@ KEGG:04350
 0.0207798
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.488501
@@ -20831,7 +21179,7 @@ KEGG:00190
 0.0024240
 </td>
 <td style="text-align:right;">
-0.0656451
+0.0725780
 </td>
 <td style="text-align:right;">
 1.681785
@@ -20860,7 +21208,7 @@ KEGG:00860
 0.0026977
 </td>
 <td style="text-align:right;">
-0.0656451
+0.0725780
 </td>
 <td style="text-align:right;">
 1.681653
@@ -20918,7 +21266,7 @@ KEGG:04624
 0.0274635
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.459957
@@ -20947,7 +21295,7 @@ KEGG:01100
 0.0467953
 </td>
 <td style="text-align:right;">
-0.1511843
+0.1531553
 </td>
 <td style="text-align:right;">
 1.162914
@@ -20976,7 +21324,7 @@ GO: Biological process
 0.0242511
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 -1.627514
@@ -21005,7 +21353,7 @@ GO: Biological process
 0.0289666
 </td>
 <td style="text-align:right;">
-0.1197843
+0.1174757
 </td>
 <td style="text-align:right;">
 1.386429
@@ -21034,7 +21382,7 @@ GO: Cellular component
 0.0228188
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 -1.587668
@@ -21063,7 +21411,7 @@ GO: Cellular component
 0.0241376
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.511492
@@ -21092,7 +21440,7 @@ GO: Molecular function
 0.0185166
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.478569
@@ -21121,7 +21469,7 @@ GO: Molecular function
 0.0191898
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 -1.590390
@@ -21150,7 +21498,7 @@ GO: Molecular function
 0.0268312
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.488230
@@ -21179,7 +21527,7 @@ GO: Molecular function
 0.0472047
 </td>
 <td style="text-align:right;">
-0.1511843
+0.1531553
 </td>
 <td style="text-align:right;">
 1.289588
@@ -21382,7 +21730,7 @@ KEGG:01100
 0.0154985
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.156148
@@ -21411,7 +21759,7 @@ KEGG:00051
 0.0188415
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.519598
@@ -21440,7 +21788,7 @@ KEGG:00630
 0.0253139
 </td>
 <td style="text-align:right;">
-0.1179314
+0.1145620
 </td>
 <td style="text-align:right;">
 1.455054
@@ -21614,7 +21962,39 @@ module_GO_table &lt;- make_module_GO_table()</code></pre>
    module_enrichment_plot(is.KEGG = TRUE)
 ggsave(module_KEGG, file = &quot;figures/Figure 4 - module KEGG.pdf&quot;, height = 7, width = 8)
 module_KEGG</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-38-1.png" width="864" style="display: block; margin: auto;" /> <br></br> <strong>Figure 4</strong>: Results of KEGG pathway enrichment analysis for the genes in each of the three significantly pheromone-sensitive transcriptional modules. The gene universe was defined as all genes for which we found an ortholog in all four species (i.e. the set that was used to discover these co-expressed modules). All KEGG terms shown in green were significantly enriched (p &lt; 0.05), and those shown in purple remained significant after correction for multiple testing. Fold enrichment was calculated as the proportion of genes associated with the focal KEGG term in the module, divided by the equivalent proportion in the gene universe.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-38-1.png" width="864" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-38-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-38-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br></br> <strong>Figure 4</strong>: Results of KEGG pathway enrichment analysis for the genes in each of the three significantly pheromone-sensitive transcriptional modules. The gene universe was defined as all genes for which we found an ortholog in all four species (i.e. the set that was used to discover these co-expressed modules). All KEGG terms shown in green were significantly enriched (p &lt; 0.05), and those shown in purple remained significant after correction for multiple testing. Fold enrichment was calculated as the proportion of genes associated with the focal KEGG term in the module, divided by the equivalent proportion in the gene universe.</p>
 </div>
 <div id="go-bp" class="section level4">
 <h4>GO BP</h4>
@@ -21624,7 +22004,39 @@ module_KEGG</code></pre>
 
 saveRDS(fig_S6, file = &quot;supplement/fig_S6.rds&quot;)
 fig_S6</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-39-1.png" width="864" style="display: block; margin: auto;" /> <br></br> <strong>Figure S6</strong>: Comparable figure to Figure 4, showing the results of GO: Biological process enrichment analysis instead of KEGG pathways.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-39-1.png" width="864" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-39-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-39-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br></br> <strong>Figure S6</strong>: Comparable figure to Figure 4, showing the results of GO: Biological process enrichment analysis instead of KEGG pathways.</p>
 </div>
 <div id="go-mf" class="section level4">
 <h4>GO MF</h4>
@@ -21634,7 +22046,39 @@ fig_S6</code></pre>
 
 saveRDS(fig_S7, file = &quot;supplement/fig_S7.rds&quot;)
 fig_S7</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-40-1.png" width="864" style="display: block; margin: auto;" /> <br></br> <strong>Figure S7</strong>: Comparable figure to Figure 4, showing the results of GO: Molecular function enrichment analysis instead of KEGG pathways.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-40-1.png" width="864" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-40-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-40-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br></br> <strong>Figure S7</strong>: Comparable figure to Figure 4, showing the results of GO: Molecular function enrichment analysis instead of KEGG pathways.</p>
 </div>
 <div id="go-cc" class="section level4">
 <h4>GO CC</h4>
@@ -21644,7 +22088,39 @@ fig_S7</code></pre>
 
 saveRDS(fig_S8, file = &quot;supplement/fig_S8.rds&quot;)
 fig_S8</code></pre>
-<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-41-1.png" width="864" style="display: block; margin: auto;" /> <br></br> <strong>Figure S8</strong>: Comparable figure to Figure 4, showing the results of GO: Cellular component enrichment analysis instead of KEGG pathways. Module 9 is missing because no <a href="GO:CC" class="uri">GO:CC</a> terms were significantly enriched.</p>
+<p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-41-1.png" width="864" style="display: block; margin: auto;" /></p>
+<details>
+<summary><em>Expand here to see past versions of unnamed-chunk-41-1.png:</em></summary>
+<table style = "border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-41-1.png" target="_blank">f260a62</a>
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+<p><br></br> <strong>Figure S8</strong>: Comparable figure to Figure 4, showing the results of GO: Cellular component enrichment analysis instead of KEGG pathways. Module 9 is missing because no <a href="GO:CC" class="uri">GO:CC</a> terms were significantly enriched.</p>
 </div>
 </div>
 <div id="table-of-all-module-enrichment-results" class="section level3">
@@ -110984,17 +111460,6 @@ phospholipase A1 member A-like
 </table>
 </div>
 </div>
-</div>
-<div id="r-session-information" class="section level2">
-<h2>R session information</h2>
-<p>This section shows the operating system and R packages used to produce this document.</p>
-<pre class="r"><code>sessionInfo() %&gt;% pander()</code></pre>
-<p><strong>R version 3.5.1 (2018-07-02)</strong></p>
-<p><strong>Platform:</strong> x86_64-apple-darwin15.6.0 (64-bit)</p>
-<p><strong>locale:</strong> en_AU.UTF-8||en_AU.UTF-8||en_AU.UTF-8||C||en_AU.UTF-8||en_AU.UTF-8</p>
-<p><strong>attached base packages:</strong> <em>parallel</em>, <em>stats4</em>, <em>grid</em>, <em>stats</em>, <em>graphics</em>, <em>grDevices</em>, <em>utils</em>, <em>datasets</em>, <em>methods</em> and <em>base</em></p>
-<p><strong>other attached packages:</strong> <em>AnnotationHub(v.2.12.0)</em>, <em>GO.db(v.3.6.0)</em>, <em>AnnotationDbi(v.1.42.1)</em>, <em>IRanges(v.2.14.10)</em>, <em>S4Vectors(v.0.18.3)</em>, <em>Biobase(v.2.40.0)</em>, <em>BiocGenerics(v.0.26.0)</em>, <em>fgsea(v.1.6.0)</em>, <em>Rcpp(v.1.0.0)</em>, <em>clusterProfiler(v.3.8.1)</em>, <em>kableExtra(v.0.9.0)</em>, <em>pander(v.0.6.2)</em>, <em>sva(v.3.28.0)</em>, <em>BiocParallel(v.1.14.2)</em>, <em>genefilter(v.1.62.0)</em>, <em>mgcv(v.1.8-24)</em>, <em>nlme(v.3.1-137)</em>, <em>MuMIn(v.1.42.1)</em>, <em>ecodist(v.2.0.1)</em>, <em>gplots(v.3.0.1)</em>, <em>ggjoy(v.0.4.1)</em>, <em>ggridges(v.0.5.0)</em>, <em>RColorBrewer(v.1.1-2)</em>, <em>gridExtra(v.2.3)</em>, <em>ggdendro(v.0.1-20)</em>, <em>ggrepel(v.0.8.0)</em>, <em>ggplot2(v.3.1.0)</em>, <em>stringr(v.1.3.1)</em>, <em>purrr(v.0.3.1)</em>, <em>tidyr(v.0.8.2)</em>, <em>dplyr(v.0.8.0.1)</em>, <em>reshape2(v.1.4.3)</em>, <em>RSQLite(v.2.1.1)</em>, <em>WGCNA(v.1.63)</em>, <em>fastcluster(v.1.1.25)</em> and <em>dynamicTreeCut(v.1.63-1)</em></p>
-<p><strong>loaded via a namespace (and not attached):</strong> <em>backports(v.1.1.2)</em>, <em>Hmisc(v.4.1-1)</em>, <em>fastmatch(v.1.1-0)</em>, <em>workflowr(v.1.1.1)</em>, <em>plyr(v.1.8.4)</em>, <em>igraph(v.1.2.1)</em>, <em>lazyeval(v.0.2.1)</em>, <em>splines(v.3.5.1)</em>, <em>robust(v.0.4-18)</em>, <em>digest(v.0.6.18)</em>, <em>BiocInstaller(v.1.30.0)</em>, <em>foreach(v.1.4.4)</em>, <em>htmltools(v.0.3.6)</em>, <em>GOSemSim(v.2.6.0)</em>, <em>viridis(v.0.5.1)</em>, <em>gdata(v.2.18.0)</em>, <em>magrittr(v.1.5)</em>, <em>checkmate(v.1.8.5)</em>, <em>memoise(v.1.1.0)</em>, <em>fit.models(v.0.5-14)</em>, <em>cluster(v.2.0.7-1)</em>, <em>doParallel(v.1.0.14)</em>, <em>limma(v.3.36.2)</em>, <em>readr(v.1.1.1)</em>, <em>annotate(v.1.58.0)</em>, <em>matrixStats(v.0.54.0)</em>, <em>R.utils(v.2.7.0)</em>, <em>enrichplot(v.1.0.2)</em>, <em>colorspace(v.1.3-2)</em>, <em>blob(v.1.1.1)</em>, <em>rvest(v.0.3.2)</em>, <em>rrcov(v.1.4-4)</em>, <em>crayon(v.1.3.4)</em>, <em>RCurl(v.1.95-4.11)</em>, <em>impute(v.1.54.0)</em>, <em>survival(v.2.42-6)</em>, <em>iterators(v.1.0.10)</em>, <em>glue(v.1.3.0.9000)</em>, <em>gtable(v.0.2.0)</em>, <em>UpSetR(v.1.3.3)</em>, <em>DEoptimR(v.1.0-8)</em>, <em>scales(v.1.0.0)</em>, <em>DOSE(v.3.6.1)</em>, <em>mvtnorm(v.1.0-8)</em>, <em>DBI(v.1.0.0)</em>, <em>viridisLite(v.0.3.0)</em>, <em>xtable(v.1.8-3)</em>, <em>htmlTable(v.1.12)</em>, <em>units(v.0.6-0)</em>, <em>foreign(v.0.8-71)</em>, <em>bit(v.1.1-14)</em>, <em>preprocessCore(v.1.42.0)</em>, <em>Formula(v.1.2-3)</em>, <em>htmlwidgets(v.1.2)</em>, <em>httr(v.1.3.1)</em>, <em>acepack(v.1.4.1)</em>, <em>pkgconfig(v.2.0.2)</em>, <em>XML(v.3.98-1.12)</em>, <em>R.methodsS3(v.1.7.1)</em>, <em>nnet(v.7.3-12)</em>, <em>dbplyr(v.1.2.2)</em>, <em>later(v.0.7.5)</em>, <em>tidyselect(v.0.2.5)</em>, <em>labeling(v.0.3)</em>, <em>rlang(v.0.3.1)</em>, <em>munsell(v.0.5.0)</em>, <em>tools(v.3.5.1)</em>, <em>evaluate(v.0.11)</em>, <em>yaml(v.2.2.0)</em>, <em>knitr(v.1.20)</em>, <em>bit64(v.0.9-7)</em>, <em>robustbase(v.0.93-1.1)</em>, <em>caTools(v.1.17.1.1)</em>, <em>ggraph(v.1.0.2)</em>, <em>mime(v.0.6)</em>, <em>whisker(v.0.3-2)</em>, <em>R.oo(v.1.22.0)</em>, <em>DO.db(v.2.9)</em>, <em>xml2(v.1.2.0)</em>, <em>compiler(v.3.5.1)</em>, <em>rstudioapi(v.0.9.0)</em>, <em>curl(v.3.2)</em>, <em>interactiveDisplayBase(v.1.18.0)</em>, <em>tibble(v.2.0.99.9000)</em>, <em>tweenr(v.0.1.5)</em>, <em>pcaPP(v.1.9-73)</em>, <em>stringi(v.1.3.1)</em>, <em>highr(v.0.7)</em>, <em>lattice(v.0.20-35)</em>, <em>Matrix(v.1.2-14)</em>, <em>pillar(v.1.3.1.9000)</em>, <em>data.table(v.1.11.8)</em>, <em>cowplot(v.0.9.3)</em>, <em>bitops(v.1.0-6)</em>, <em>httpuv(v.1.4.5)</em>, <em>qvalue(v.2.12.0)</em>, <em>R6(v.2.4.0)</em>, <em>latticeExtra(v.0.6-28)</em>, <em>promises(v.1.0.1)</em>, <em>KernSmooth(v.2.23-15)</em>, <em>codetools(v.0.2-15)</em>, <em>MASS(v.7.3-50)</em>, <em>gtools(v.3.8.1)</em>, <em>assertthat(v.0.2.0)</em>, <em>rprojroot(v.1.3-2)</em>, <em>withr(v.2.1.2)</em>, <em>hms(v.0.4.2)</em>, <em>rpart(v.4.1-13)</em>, <em>rmarkdown(v.1.10)</em>, <em>rvcheck(v.0.1.0)</em>, <em>git2r(v.0.23.0)</em>, <em>ggforce(v.0.1.3)</em>, <em>shiny(v.1.2.0)</em> and <em>base64enc(v.0.1-3)</em></p>
 </div>
 <div id="session-information" class="section level2">
 <h2>Session information</h2>
