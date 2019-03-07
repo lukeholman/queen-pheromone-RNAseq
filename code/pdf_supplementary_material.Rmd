@@ -1,0 +1,323 @@
+---
+title: "Supplementary Information"
+output: pdf_document
+header-includes: 
+  \usepackage{booktabs}
+  \usepackage{microtype}
+  \usepackage{longtable}
+  \usepackage[margin=1in]{geometry}
+---
+
+## Comparative transcriptomics of social insect queen pheromones
+
+## Holman et al.
+
+## Supplementary Figures and Supplementary Tables
+
+
+Note that all of the figures and tables in this document can also be viewed online at **https://mikheyev.github.io/queen-pheromone/**, along with the R code used to generate them. 
+
+\newpage
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(kableExtra)
+library(stringr)
+
+make_table <- function(file, LT = TRUE, digits = getOption("digits")){
+  kable(readRDS(file), "latex", longtable = LT, booktabs = TRUE, digits = digits) %>%
+    kable_styling(latex_options = c("repeat_header", "scale_down"), font_size = 7)
+}
+```
+
+# Supplementary figures
+
+```{r}
+readRDS("supplement/fig_S1.rds")
+```
+**Supplementary Figure 1**: After reducing the transcriptome data to two axes using non-metric multidimensional scaling, four _Lasius_ samples were clear outliers.
+
+\newpage
+```{r}
+readRDS("supplement/fig_S2.rds")
+```
+**Supplementary Figure 2**: With the four problematic samples removed, the samples cluster according to species with no obvious outliers.
+
+\newpage
+```{r fig.height=8, fig.width=4.8, fig.align='center'}
+readRDS("supplement/fig_S3.rds")
+```
+<br></br>
+**Supplementary Figure 3**: Each scatterplot shows the correlation in pheromone sensitivity across pairs of orthologous genes, for each of the six possible species pairs. Species 1 refers to the first-listed species, such that in the top-left panel, _Apis mellifera_ is plotted on the x-axis and _Bombus terrestris_ is on the y-axis. The regression lines are from a simple linear regression, and the grey zone around the line shows its 95% confidence intervals. 
+
+\newpage
+```{r}
+readRDS("supplement/fig_S4.rds")
+```
+**Supplementary Figure 4**: Distribution of isoform numbers per gene for each of the four species.
+
+\newpage
+```{r fig.height=8, fig.width=8}
+grid::grid.draw(readRDS("supplement/fig_S5.rds"))
+```
+**Supplementary Figure 5**: Genes for which alternative splicing is strongly affected by queen pheromone tend to have similar Gene Ontology and KEGG terms in ants and bees, although the data do not provide strong evidence for or against inter-species similarity. The colour shows the normalised expression score from a GSEA (gene set enrichment analysis) test implemented in the R package `fgsea`; positive (red) values indicate that the GO or KEGG term is over-represented among genes whose splicing is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among those genes. Asterisks denote statistically significant enrichment (p < 0.05), and double asterisks mark results that remained significant after adjusting the p-values for multiple testing using the Benjamini-Hochberg method. Empty squares denote cases where we did not find at least 5 alternatively spliced genes annotated with the focal term.
+
+\newpage
+```{r fig.height = 8, fig.width=9}
+grid::grid.draw(readRDS("supplement/fig_S6.rds"))
+```
+**Supplementary Figure 6**: Comparable figure to Figure 4, showing the results of GO: Biological process enrichment analysis instead of KEGG pathways. 
+
+\newpage
+```{r fig.height = 8, fig.width=9}
+grid::grid.draw(readRDS("supplement/fig_S7.rds"))
+```
+**Supplementary Figure 7**: Comparable figure to Figure 4, showing the results of GO: Molecular function enrichment analysis instead of KEGG pathways. 
+
+\newpage
+```{r fig.height = 8, fig.width=9}
+grid::grid.draw(readRDS("supplement/fig_S8.rds"))
+```
+**Supplementary Figure 8**: Comparable figure to Figure 4, showing the results of GO: Cellular component enrichment analysis instead of KEGG pathways. Module 9 is missing because no GO:CC terms were significantly enriched.
+
+
+
+\newpage
+# Supplementary tables
+
+**Supplementary Table 1**: Number of sequencing libraries for each combination of species and treatment, after removing the four problematic libraries. Each library was prepared from a pool containing equal amounts of cDNA from five individual workers, taken from the same colony. 
+```{r, results='asis'}
+make_table("supplement/tab_S1.rds")
+```
+\newpage
+
+**Supplementary Table 2**: List of the 322 significantly differentially expressed genes (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Apis mellifera_, listed in order of fold change in gene expression on a Log$_2$ scale. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment.
+```{r, results='asis'}
+make_table("supplement/tab_S2.rds")
+```
+\newpage
+
+**Supplementary Table 3**: The single significantly differentially expressed gene (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Bombus terrestris_. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment. The second and third columns give the best BLAST hit for this gene in _A. mellifera_ plus the name of the _A. mellifera_ putative ortholog. 
+```{r, results='asis'}
+make_table("supplement/tab_S3.rds")
+```
+\newpage
+
+**Supplementary Table 4**: List of the 290 significantly differentially expressed genes (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Lasius flavus_, listed in order of fold change in gene expression on a Log$_2$ scale. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment. The second and third columns give the best BLAST hit for this gene in _A. mellifera_ plus the name of the _A. mellifera_ putative ortholog. 
+```{r, results='asis'}
+make_table("supplement/tab_S4.rds")
+```
+\newpage
+
+**Supplementary Table 5**: List of the 135 significantly differentially expressed genes (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Lasius niger_, listed in order of fold change in gene expression on a Log$_2$ scale. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment. The second and third columns give the best BLAST hit for this gene in _A. mellifera_ plus the name of the _A. mellifera_ putative ortholog. 
+```{r, results='asis'}
+make_table("supplement/tab_S5.rds")
+```
+\newpage
+
+**Supplementary Table 6**: All orthologous genes that were significantly differentially expressed between pheromone treatments in more than one species. The FC columns give the Log$_2$ fold-change in expression for each species where the focal gene was significantly differentially expressed, where positive numbers mean it was expressed at a higher level in control animals. The last column highlights genes that responded to treatment in a consistent or inconsistent direction across species. _B. terrestris_ is omitted because neither of its differentially expressed genes were significantly affected by treatment in the other three species.
+```{r, results='asis'}
+make_table("supplement/tab_S6.rds")
+```
+\newpage
+
+**Supplementary Table 7**: The overlap between the lists of significantly differently expressed orthologous genes was significantly higher than expected for _L. flavus_ and _L. niger_, suggesting that queen pheromone has conserved effects on gene expression between these two species (results based on a hypergeometric test). For the other two species pairs, the number of overlapping genes was not higher or lower than expected under the null hypothesis that queen pheromone affects a random set of genes in each species. The last column gives the number of genes that overlapped, divided by the maximum number that _could_ have overlapped given the numbers of orthologous genes that were significant in each species.
+```{r, results='asis'}
+make_table("supplement/tab_S7.rds")
+```
+\newpage
+
+**Supplementary Table 8**: List of genes that appear in the top _n_-most pheromone-sensitive genes for 3 or 4 species. To generate the table, we ranked genes by the absolute value of their log fold change in response to queen pheromone, then listed the gene names that appeared in 3-4 species. For non-_Apis_ species, we found the gene names by comparison with the _Apis_ genome by BLAST. This exercise was performed with _n_ = 100, 200 ... 500, and the third column lists the smallest _n_ for which the gene in question appeared (for example, the gene _protein takeout-like_ appeared for all 4 species when inspecting the top 200+ genes). 
+```{r, results='asis'}
+make_table("supplement/tab_S8.rds")
+```
+\newpage
+
+**Supplementary Table 9**: Results of a permutation test examining the number of overlaps in the top _n_-most pheromone-sensitive genes for each pair of species. To generate the table, we ranked genes by the absolute value of their log fold change in response to queen pheromone, then took the top _n_-most pheromone-sensitive genes for each species, and counted the observed and expected number of overlaps (the expected number was estimated by bootstrapping with 10^5 replicates). The O/E column gives the ratio of observed to expected, where numbers >1 indicate more overlap than expected. The one-tailed p-value was estimated as the proportion of bootstrap replicates showing more overlap than in the real dataset. This exercise was performed with _n_ = 100, 200 ... 500.
+```{r, results='asis'}
+make_table("supplement/tab_S9.rds")
+```
+\newpage
+
+**Supplementary Table 10**: Results of Spearman's rank correlations, testing whether the absolute log fold difference between pheromones treatments is correlated for a given pair of species. Positive coefficients ($\rho$, written as rho) indicate that on average, orthologous genes have similar sensitivity to queen pheromones. The p-values have been corrected for multiple testing with the Benjamini-Hochberg method.
+```{r, results='asis'}
+make_table("supplement/tab_S10.rds")
+```
+\newpage
+
+**Supplementary Table 11**: List of genes showing statistically significant pheromone-induced alternative splicing in _A. mellifera_. These genes were defined as those that have at least two isoforms that are differentially expressed following pheromone treatment (EBseq; posterior probability of differential expression p < 0.05), and for which one isoform increases in expression while another decreases. The last two columns show the fold changes of the most down-regulated and most up-regulated isoforms, on a Log$_2$ scale.
+```{r, results='asis'}
+make_table("supplement/tab_S11.rds", digits = 3)
+```
+\newpage
+
+**Supplementary Table 12**: List of genes showing statistically significant pheromone-induced alternative splicing in _Lasius flavus_. These genes were defined as those that have at least two isoforms that are differentially expressed following pheromone treatment (EBseq; posterior probability of differential expression p < 0.05), and for which one isoform increases in expression while another decreases. The last two columns show the fold changes of the most down-regulated and most up-regulated isoforms, on a Log$_2$ scale.
+```{r results='asis'}
+make_table("supplement/tab_S12.rds", digits = 3)
+```
+\newpage
+
+**Supplementary Table 13**: List of genes showing statistically significant pheromone-induced alternative splicing in _Lasius flavus_. These genes were defined as those that have at least two isoforms that are differentially expressed following pheromone treatment (EBseq; posterior probability of differential expression p < 0.05), and for which one isoform increases in expression while another decreases. The last two columns show the fold changes of the most down-regulated and most up-regulated isoforms, on a Log$_2$ scale.
+```{r, results='asis'}
+make_table("supplement/tab_S13.rds", digits = 3)
+```
+\newpage
+
+**Supplementary Table 14**: The posterior model probabilities of five competing multivariate Bayesian models of the module eigengene dataset. The best-fitting model (with posterior probability of almost 1) contains the treatment effect only (not the species effect, or the treatment-by-species interaction).
+```{r, results='asis'}
+make_table("data/brms_model_comparisons.rds") 
+```
+\newpage
+
+**Supplementary Table 15**: Full summary of the best-fitting multivariate Bayesian model of the eigengene data for all nine modules, implemented in the programming language `Stan` via the R package `brms`. The most salient part of the output is the population-level effects (often called fixed effects), which give the coefficients for the intercept and the effect of queen pheromone treatment on the eigengenes for each module. The 9 response variables were all scaled to have mean 0 and variance 1 before running the model, meaning that the estimates can be interpreted as Cohen's $d$ effect size. The remaining sections describe the (co)variance associated with colony (which appears to be low), and the covariance in the residuals (which illustrates how eigengenes are correlated across modules).
+```{r}
+cat(paste(readLines("data/brms_model.txt"), "\n", sep = ""))
+```
+\newpage
+
+**Supplementary Table 16**: Results of Spearman's rank correlations testing for a relationship between the effect of queen pheromone on gene expression, and the connectedness of the gene. Negative values of Spearman's Rho mean that highly pheromone-sensitive genes tend to have lower connectedness.
+```{r, results='asis'}
+make_table("supplement/tab_S16.rds")
+```
+\newpage
+
+**Supplementary Table 17**: A list of the six module pairs, from Morandin _et al._ 2016 and the present study, which had significantly more genes in common than expected by chance. The p-values were calculated by running hypergeometric tests on all possible pairs of modules from the two studies, and then adjusting all the p-values using the Benjamini-Hochberg procedure. 
+```{r, results='asis'}
+make_table("supplement/tab_S17.rds", FALSE, digits = 4)
+```
+\newpage
+
+**Supplementary Table 18**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Apis mellifera_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r, results='asis'}
+make_table("supplement/tab_S18.rds", FALSE, digits = 3)
+```
+\newpage
+
+**Supplementary Table 19**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Bombus terrestris_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r, results='asis'}
+make_table("supplement/tab_S19.rds", FALSE, digits = 3)
+```
+\newpage
+
+**Supplementary Table 20**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Lasius flavus_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r, results='asis'}
+make_table("supplement/tab_S20.rds", FALSE, digits = 3)
+```
+\newpage
+
+**Supplementary Table 21**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Lasius niger_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r, results='asis'}
+make_table("supplement/tab_S21.rds", FALSE, digits = 3)
+```
+\newpage
+
+**Supplementary Table 22**: The Supplementary Table hows the Spearman correlation (rho) and p-value for correlations across genes in the pheromone-sensitivity of their isoform production, for each pair of species. For each gene, our metric of the sensitivity of splicing to pheromone treatment was calculated by taking the difference between the highest and lowest log fold change values for the various isoforms. Thus, genes for which one isoform strongly increased in expression and one strongly decreased following pheromone treatment score high, and those in which there is no response to pheromone -- or a consistent response for all isoforms -- score low. The results suggest that the pheromone sensitivity in splicing is highly conserved between orthologous bee genes, and somewhat less conserved between orthologous ant genes, and between bee and ants genes.
+```{r, results='asis'}
+make_table("supplement/tab_S22.rds", digits = 3)
+```
+\newpage
+
+**Supplementary Table 23**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in alternative splicing. The table lists statistically significant GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying each enrichment result. Note that the online version of this table at https://mikheyev.github.io/queen-pheromone/ has additional columns giving the names and IDs of the enriched genes, which did not fit on this page.
+```{r, results='asis'}
+make_table("supplement/tab_S23.rds", FALSE, digits = 3)
+```
+\newpage
+
+**Supplementary Table 24**: List of every significant enrichment test result for each module, for all four ontologies. The latter two columns specify all the genes associated with the focal GO or KEGG term that are found in the module. The GeneRatio and BgRatio columns give the number of genes annotated with the focal term that are present in the focal module or the gene universe, respecitvely. These values were used to calculate the enrichment column, as the proportion of genes associated with the focal annotation term in the module, divided by the equivalent proportion in the gene universe. Note that the online version of this table at https://mikheyev.github.io/queen-pheromone/ has additional columns giving the names and IDs of the enriched genes, and some extra enrichment test statistics, which did not fit on this page.
+```{r, results='asis'}
+make_table("supplement/tab_S24.rds", digits = 3) %>% column_spec(4, width = "5cm")
+```
+\newpage
+
+**Supplementary Table 25**: List of all the genes in Module 0, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S25.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 26**: List of all the genes in Module 1, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S26.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 27**: List of all the genes in Module 2, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S27.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 28**: List of all the genes in Module 3, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S28.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 29**: List of all the genes in Module 4, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S29.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 30**: List of all the genes in Module 5, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S30.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 31**: List of all the genes in Module 6, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S31.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 32**: List of all the genes in Module 7, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S32.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 33**: List of all the genes in Module 8, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S33.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage
+
+**Supplementary Table 34**: List of all the genes in Module 9, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r, results='asis'}
+make_table("supplement/tab_S34.rds", digits = 3) %>% 
+  column_spec(2, width = "7.5cm") %>% 
+  column_spec(3, width = ".8cm")  %>% column_spec(4, width = ".8cm") %>% 
+  column_spec(5, width = ".8cm") %>% column_spec(6, width = ".8cm")
+```
+\newpage

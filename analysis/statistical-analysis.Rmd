@@ -2121,12 +2121,6 @@ kable.table(gene_list)
 ```
 
 
-## R session information
-This section shows the operating system and R packages used to produce this document. 
-```{r}
-sessionInfo() %>% pander()
-```
-
 ```{r echo=FALSE, results="hide"}
 unlink("blockwiseTOM-block.1.RData")
 ```
