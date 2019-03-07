@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="From: Comparative transcriptomics of social insect queen pheromones" />
+
+<meta name="date" content="2019-03-07" />
+
+<title>Bioinformatic analysis</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">queen-pheromone-RNAseq</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jdblischak/workflowr">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Bioinformatic analysis</h1>
+<h4 class="author"><em>From: Comparative transcriptomics of social insect queen pheromones</em></h4>
+<h4 class="date"><em>2019-03-07</em></h4>
+
+</div>
+
+
+<p><strong>Last updated:</strong> 2019-03-07</p>
+<strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
+<ul>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>R Markdown file:</strong> up-to-date </summary></p>
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Environment:</strong> empty </summary></p>
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(20190307)</code> </summary></p>
+<p>The command <code>set.seed(20190307)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Session information:</strong> recorded </summary></p>
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</details>
+</li>
+<li>
+<details>
+<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> 934cda8 </summary></p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    data/.DS_Store
+
+Untracked files:
+    Untracked:  analysis/README.md
+    Untracked:  analysis/queen_pheromone.Rmd
+    Untracked:  bioinformatics scripts/
+    Untracked:  code/Script to make the donut plot.R
+    Untracked:  code/Script to run multivariate brms model.R
+    Untracked:  code/Script to set up for GO analyses.R
+    Untracked:  code/pdf_supplementary_material.Rmd
+    Untracked:  code/pdf_supplementary_material.pdf
+    Untracked:  code/wojciechowski_histone_analysis.R
+    Untracked:  data/apis.org.db
+    Untracked:  data/apis_gene_comparisons/
+    Untracked:  data/brms_model.txt
+    Untracked:  data/brms_model_comparisons.rds
+    Untracked:  data/brms_model_summary.rds
+    Untracked:  data/component spreadsheets of queen_pheromone.db/
+    Untracked:  data/gene_set_collection.RData
+    Untracked:  data/gene_set_collection_kegg.RData
+    Untracked:  data/morandin_comparison_data/
+    Untracked:  data/most.pheromone.sensitive.genes.rds
+    Untracked:  data/queen_pheromone.db
+    Untracked:  docs/figure/
+    Untracked:  figures/
+    Untracked:  manuscript/
+    Untracked:  supplement/
+
+Unstaged changes:
+    Modified:   .gitignore
+    Deleted:    data/README.md
+
+</code></pre>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</details>
+</li>
+</ul>
+<details>
+<summary> <small><strong>Expand here to see past versions:</strong></small> </summary>
+<ul>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+File
+</th>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+<th style="text-align:left;">
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Rmd
+</td>
+<td style="text-align:left;">
+934cda8
+</td>
+<td style="text-align:left;">
+Luke Holman
+</td>
+<td style="text-align:left;">
+2019-03-07
+</td>
+<td style="text-align:left;">
+First commit of new website structure
+</td>
+</tr>
+</tbody>
+</table>
+</ul>
+</details>
+<hr />
+<div id="workflow" class="section level1">
+<h1>Workflow</h1>
+<p>There are already sequenced genomes of <em>A. mellifera</em> and <em>B. terrestris</em> and <em>L. niger</em> in NCBI. We’ll have to make something for <em>L. flavus</em> from scratch.</p>
+<p>We also need to determine possible isoforms for the genes in the data set, which we will do using tophat for the genomes that have references.</p>
+<div id="l.-niger-workflow" class="section level2">
+<h2><em>L. niger</em> workflow</h2>
+<p>This specis has no isoform data in NCBI, so we create our own. First we create bowtie2 indexed for the reference genomes using <code>bowtie2-build</code>, and then tophat and cufflinks are executed using <code>tophat.sh</code> using reference-based mapping to identify alternative splicing.</p>
+</div>
+<div id="l-flavus-workflow" class="section level2">
+<h2><em>L flavus</em> workflow</h2>
+<p><code>trinity.sh</code> assemble lf from raw reads. We are not using a genome guided assembly, since the ln genome is fragmented, as per <a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki/Genome-Guided-Trinity-Transcriptome-Assembly">recommendation</a> of the trinity authors <code>transdecoder.sh</code> predict proteins from the transcripts.</p>
+</div>
+<div id="gene-expression-analysis" class="section level2">
+<h2>Gene expression analysis</h2>
+<p><strong>kallisto</strong> We use kallisto for gene expression analysis of transcripts from the NCBI data bases for <em>A. mellifera</em> and <em>B. terrestis</em>, for the TopHat assembly of <em>L. niger</em> and for the Trinity assembly of <em>L. flavus</em>.</p>
+<p><strong>rsem and ebseq</strong> This is the more traditional approach using the same data sources. We prepare references as ngvector files from the predicted transcripts, as per instructions.</p>
+</div>
+<div id="orthology" class="section level2">
+<h2>Orthology</h2>
+<p>We handle this by reciprocal blastp hit on the proteins vs the honey bee genome (the best annotated of the bunch) <em>e.g.,</em> <code>blastp -num_threads 12 -query lf.fa -db amel -outfmt 6 -evalue 1e-4 -max_target_seqs 1</code></p>
+</div>
+</div>
+<div id="individual-scripts" class="section level1">
+<h1>Individual scripts</h1>
+<p>We here present the individual scripts in code chunks, for convenient viewing.</p>
+<div id="ebseq.sh" class="section level2">
+<h2><code>ebseq.sh</code></h2>
+<pre class="bash"><code>#!/bin/bash
+#SBATCH --job-name=ebseq
+#SBATCH --partition=compute
+#SBATCH --mem=500M
+#SBATCH --time=1:00:00
+#SBATCH --cpus-per-task=1
+##SBATCH --mail-user=%u@oist.jp
+##SBATCH --mail-type=BEGIN,FAIL,END
+#SBATCH --input=none
+#SBATCH --output=%j.out
+##SBATCH --error=job_%j.err
+. $HOME/.bashrc
+
+
+rsem=/apps/unit/MikheyevU/sasha/RSEM
+refdir=./data/rsem
+a=($(ls -1  ./data/raw_reads/trimmed/*_1.fastq.gz |awk -F/ &#39;{print $NF}&#39; |cut -c-2 |uniq)) #4
+species=${a[&quot;SLURM_ARRAY_TASK_ID&quot;]}
+echo $species
+
+# contrasts are relative to control treatments, i.e., control goes first
+
+if [ &quot;$species&quot; == &quot;bt&quot; ]; then
+    samples=`for i in 2 4 5 8 10 1 3 6 7 9; do echo -ne $refdir/$species$i&quot;.isoforms.results &quot;;done`
+    $rsem/rsem-generate-data-matrix $samples &gt; $refdir/$species.matrix
+    conditions=&quot;5,5&quot;
+elif [ &quot;$species&quot; == &quot;am&quot; ]; then    
+    samples=`for i in 2 4 6 1 3; do echo -ne $refdir/$species$i&quot;.isoforms.results &quot;;done`
+    $rsem/rsem-generate-data-matrix $samples &gt; $refdir/$species.matrix
+    conditions=&quot;3,2&quot;
+elif [ &quot;$species&quot; == &quot;lf&quot; ]; then
+    samples=`for i in 4 6 8 10 12 14 16 1 3 5 7 11 13; do echo -ne $refdir/$species$i&quot;.isoforms.results &quot; ;done`
+    echo $samples
+    $rsem/rsem-generate-data-matrix $samples &gt; $refdir/$species.matrix
+    conditions=&quot;7,6&quot;
+elif [ &quot;$species&quot; == &quot;ln&quot; ]; then
+    samples=`for i in 1 3 5 7 11 2 4 6 8  12; do echo -ne $refdir/$species$i&quot;.isoforms.results &quot;;done`
+    $rsem/rsem-generate-data-matrix $samples &gt; $refdir/$species.matrix
+    conditions=&quot;5,5&quot;
+fi
+
+$rsem/rsem-generate-data-matrix `echo $samples | sed &#39;s/isoforms/genes/g&#39;` &gt; $refdir/$species.genes.matrix
+$rsem/rsem-run-ebseq $refdir/$species.genes.matrix $conditions $refdir/$species&quot;.genes.ebseq&quot;
+$rsem/rsem-control-fdr $refdir/$species&quot;.genes.ebseq&quot; .05 $refdir/$species&quot;.genes.padj.ebseq&quot;
+
+$rsem/rsem-run-ebseq --ngvector ./ref/$species.ngvec $refdir/$species.matrix $conditions $refdir/$species&quot;.ebseq&quot;
+$rsem/rsem-control-fdr $refdir/$species&quot;.ebseq&quot; .05 $refdir/$species&quot;.padj.ebseq&quot;</code></pre>
+</div>
+<div id="kallisto.sh" class="section level2">
+<h2><code>kallisto.sh</code></h2>
+<pre class="bash"><code>#!/bin/bash
+#SBATCH --job-name=kalisto
+#SBATCH --partition=compute
+#SBATCH --mem=3G
+#SBATCH --time=5:00:00
+#SBATCH --cpus-per-task=1
+##SBATCH --mail-user=%u@oist.jp
+##SBATCH --mail-type=BEGIN,FAIL,END
+#SBATCH --input=none
+#SBATCH --output=%j.out
+##SBATCH --error=job_%j.err
+. $HOME/.bashrc
+
+
+module load kallisto
+
+##species=lf #am, bt, ln
+##SLURM_ARRAY_TASK_ID=0
+#for sbatch: --export=species=am
+#10 for bt, 6 for am, 12 for ln, 15 lf
+refdir=./data/raw_reads/trimmed
+a=($refdir/$species*_1.fastq.gz) 
+b=($refdir/$species*_2.fastq.gz)
+f=${a[&quot;SLURM_ARRAY_TASK_ID&quot;]}
+r=${b[&quot;SLURM_ARRAY_TASK_ID&quot;]}
+base=`basename $f _1.fastq.gz`
+
+if [ &quot;$species&quot; == &quot;bt&quot; ]; then
+    ref=./ref/GCF_000214255.1_Bter_1.0_rna
+elif [ &quot;$species&quot; == &quot;am&quot; ]; then
+    ref=./ref/GCF_000002195.4_Amel_4.5_rna
+elif [ &quot;$species&quot; == &quot;lf&quot; ]; then
+    ref=./ref/lf
+elif [ &quot;$species&quot; == &quot;ln&quot; ]; then
+    ref=./ref/ln
+fi
+
+kallisto quant -i $ref -o data/kallisto/$base -b 100 $f $r </code></pre>
+</div>
+<div id="orthodb.py" class="section level2">
+<h2><code>orthodb.py</code></h2>
+<pre class="python"><code># takes a list of protein sequences and determines their orthogroup ids
+#with python/2.7.8  
+#takes two files, source of fasta and output
+import urllib, json, time, sys
+from Bio import SeqIO
+urlbase = &quot;http://www.orthodb.org/blast?&quot;
+outfile = open(sys.argv[2], &quot;w&quot;, 0)
+level = &quot;level=7434&quot; #Aculeata
+count = 1
+start = time.time()
+for rec in SeqIO.parse(sys.argv[1], &quot;fasta&quot;):       
+    while True:             
+        try:
+            response = urllib.urlopen(urlbase + level  + &quot;&amp;seq=&quot; + str(rec.seq).replace(&quot;*&quot;,&quot;&quot;))
+            data = response.read()
+            parsedData = json.loads(data)
+        except:
+            print &quot;http error&quot;
+            time.sleep(2)
+        else:
+            break
+    if parsedData[&#39;data&#39;]:
+        outfile.write(rec.id + &quot;\t&quot; + &quot;,&quot;.join(parsedData[&#39;data&#39;]) + &quot;\n&quot;)
+    count += 1
+    if count % 100 == 0:
+        print(&quot;%i %.2f&quot; % (count, time.time() - start))
+        start = time.time()</code></pre>
+</div>
+<div id="rsem-generate-data-matrix" class="section level2">
+<h2><code>rsem-generate-data-matrix</code></h2>
+<pre class="perl"><code>#!/usr/bin/perl
+
+use strict;
+
+if (scalar(@ARGV) == 0) {
+    print &quot;Usage: rsem-generate-data-matrix sampleA.[genes/isoforms].results sampleB.[genes/isoforms].results ... &gt; output_name.matrix\n&quot;;
+    print &quot;Results files should be either all .genes.results or all .isoforms.results.\n&quot;;
+    exit(-1);
+}
+
+my $offsite = 5; # ###### change to TPM
+
+my $line;
+my $n = scalar(@ARGV);
+my $M = -1;
+my @matrix = ();
+
+# 0, file_name; 1, reference of expected count array; 2, reference of transcript_id/gene_id array
+sub loadData {
+    open(INPUT, $_[0]);
+    my $line = &lt;INPUT&gt;; # The first line contains only column names
+    while ($line = &lt;INPUT&gt;) {
+    chomp($line); 
+    my @fields = split(/\t/, $line);
+    push(@{$_[2]}, &quot;\&quot;$fields[0]\&quot;&quot;);
+    push(@{$_[1]}, $fields[$offsite]);
+    }
+    close(INPUT);
+
+    if (scalar(@{$_[1]}) == 0) {
+    print STDERR &quot;Nothing is detected! $_[0] may not exist or is empty.\n&quot;;
+    exit(-1);
+    }
+}
+
+#0, M; 1, reference of @ids_arr; 2, reference of @ids
+sub check {
+    my $size = $_[0];
+    for (my $i = 0; $i &lt; $size; $i++) { 
+    if ($_[1]-&gt;[$i] ne $_[2]-&gt;[$i]) {
+        return 0;
+    }
+    }
+    return 1;
+}
+
+my @ids_arr = ();
+
+for (my $i = 0; $i &lt; $n; $i++) {
+    my (@ids, @ecs) = ();
+    &amp;loadData($ARGV[$i], \@ecs, \@ids);
+
+    if ($M &lt; 0) { 
+    $M = scalar(@ids); 
+    @ids_arr = @ids;
+    }
+    elsif (!&amp;check($M, \@ids_arr, \@ids)) { 
+    print STDERR &quot;Number of lines among samples are not equal!\n&quot;; 
+    exit(-1); 
+    }
+
+    my $colname;
+    if (substr($ARGV[$i], 0, 2) eq &quot;./&quot;) { $colname = substr($ARGV[$i], 2); }
+    else { $colname = $ARGV[$i]; }
+    $colname = &quot;\&quot;$colname\&quot;&quot;;
+    @ecs = ($colname, @ecs);
+    push(@matrix, \@ecs);
+}
+
+@ids_arr = (&quot;&quot;, @ids_arr);
+@matrix = (\@ids_arr, @matrix);
+
+for (my $i = 0; $i &lt;= $M; $i++) {
+    for (my $j = 0; $j &lt; $n; $j++) { print &quot;$matrix[$j][$i]\t&quot;; }
+    print &quot;$matrix[$n][$i]\n&quot;;
+}</code></pre>
+</div>
+<div id="rsem.sh" class="section level2">
+<h2><code>rsem.sh</code></h2>
+<pre class="bash"><code>#!/bin/bash
+#SBATCH --job-name=rsem
+#SBATCH --partition=compute
+#SBATCH --mem=4G
+#SBATCH --time=2-00:00:00
+#SBATCH --cpus-per-task=10
+##SBATCH --mail-user=%u@oist.jp
+##SBATCH --mail-type=BEGIN,FAIL,END
+#SBATCH --input=none
+#SBATCH --output=%j.out
+##SBATCH --error=job_%j.err
+. $HOME/.bashrc
+
+
+module load rsem bowtie2
+
+cd data/rsem
+refdir=../raw_reads/trimmed
+a=($refdir/*_1.fastq.gz) #43
+b=($refdir/*_2.fastq.gz)
+f=${a[&quot;SLURM_ARRAY_TASK_ID&quot;]}
+r=${b[&quot;SLURM_ARRAY_TASK_ID&quot;]}
+species=`basename $f | cut -c-2`
+base=`basename $f _1.fastq.gz`
+
+if [ &quot;$species&quot; == &quot;bt&quot; ]; then
+    ref=../../ref/bt
+elif [ &quot;$species&quot; == &quot;am&quot; ]; then
+    ref=../../ref/am
+elif [ &quot;$species&quot; == &quot;lf&quot; ]; then
+    ref=../../ref/lf
+elif [ &quot;$species&quot; == &quot;ln&quot; ]; then
+    ref=../../ref/ln
+fi
+
+echo rsem-calculate-expression  -p 8 --paired-end --bowtie2 $f $r $ref $base
+/apps/unit/MikheyevU/sasha/RSEM/rsem-calculate-expression -p 10 --bowtie2  --paired-end $f $r $ref $base</code></pre>
+</div>
+<div id="tophat.sh" class="section level2">
+<h2><code>tophat.sh</code></h2>
+<pre class="bash"><code>#!/bin/bash
+#SBATCH --job-name=tophat
+#SBATCH --partition=compute
+##SBATCH --mem=1G
+#SBATCH --time=1-00:00:00
+##SBATCH --cpus-per-task=1
+##SBATCH --mail-user=%u@oist.jp
+##SBATCH --mail-type=BEGIN,FAIL,END
+#SBATCH --input=none
+#SBATCH --output=%j.out
+##SBATCH --error=job_%j.err
+. $HOME/.bashrc
+
+#species=ln  #am, bt, ln
+#for sbatch: --export=species=am
+refdir=./data/raw_reads/trimmed
+a=($refdir/$species*_1.fastq.gz) #10 for bt, 6 for am, 12 for ln
+b=($refdir/$species*_2.fastq.gz)
+f=${a[&quot;SLURM_ARRAY_TASK_ID&quot;]}
+r=${b[&quot;SLURM_ARRAY_TASK_ID&quot;]}
+base=`basename $f _1.fastq.gz`
+
+module load bowtie2/2.2.6 tophat/2.1.1 cufflinks/2.2.1
+
+if [ &quot;$species&quot; == &quot;bt&quot; ]; then
+    gff=./ref/GCF_000214255.1_Bter_1.0_genomic.gff
+    ref=./ref/bt
+elif [ &quot;$species&quot; == &quot;am&quot; ]; then
+    gff=./ref/GCF_000002195.4_Amel_4.5_genomic.gff
+    ref=./ref/am
+else
+    gff=./ref/GCA_001045655.1_ASM104565v1_genomic.gff 
+    ref=./ref/ln
+fi
+
+echo $SLURM_ARRAY_TASK_ID $species $gff $ref
+
+echo  $species $ref  $base $gff $f $r 
+#tophat2 -p 1 -G $gff -o ./data/assembly/tophat/$base $ref $f $r
+cufflinks -p 1 -g $gff ./data/assembly/tophat/$base/accepted_hits.bam -o ./data/assembly/tophat/$base</code></pre>
+</div>
+<div id="transdecoder.sh" class="section level2">
+<h2><code>transdecoder.sh</code></h2>
+<pre class="bash"><code>#!/bin/bash
+#SBATCH --job-name=transdecoder
+#SBATCH --partition=compute
+#SBATCH --mem=10G
+#SBATCH --cpus-per-task=10
+#SBATCH --time=1-00:00:00
+#SBATCH --ntasks=1
+##SBATCH --mail-user=%u@oist.jp
+##SBATCH --mail-type=BEGIN,FAIL,END
+#SBATCH --input=none
+#SBATCH --output=%j.out
+##SBATCH --error=job_%j.err
+
+##SLURM_ARRAY_TASK_ID=2
+
+module load Trinity/2.1.1 
+
+infile=./data/assembly/trinity_lf/Trinity.fasta
+
+base=lf
+
+TransDecoder -t $infile --reuse --workdir ./output_&quot;$base&quot; --search_pfam /apps/unit/MikheyevU/sasha/TransDecoder_r20140704/pfam/Pfam-AB.hmm.bin --CPU 10 -v</code></pre>
+</div>
+<div id="trimmomatic.sh" class="section level2">
+<h2><code>trimmomatic.sh</code></h2>
+<pre class="bash"><code>#!/bin/bash
+#SBATCH --job-name=trim
+#SBATCH --partition=compute
+#SBATCH --mem=20G
+#SBATCH --cpus-per-task=8
+##SBATCH --mail-user=%u@oist.jp
+##SBATCH --mail-type=BEGIN,FAIL,END
+#SBATCH --input=none
+#SBATCH --output=%j.out
+##SBATCH --error=job_%j.err
+
+trimmomatic=/apps/unit/MikheyevU/sasha/trimmomatic
+##SLURM_ARRAY_TASK_ID=1
+a=(*/*_1.fastq.gz) # 43
+b=(*/*_2.fastq.gz) # 43
+f=${a[&quot;SLURM_ARRAY_TASK_ID&quot;]}   
+r=${b[&quot;SLURM_ARRAY_TASK_ID&quot;]}   
+base=$(basename $f _1.fastq.gz)
+java -jar $trimmomatic/trimmomatic-0.32.jar PE -threads 8 -phred33 $f $r trimmed/$base&quot;_1.fastq.gz&quot; trimmed/$base&quot;_unpaired1.fastq.gz&quot; trimmed/$base&quot;_2.fastq.gz&quot; trimmed/$base&quot;_unpaired2.fastq.gz&quot; ILLUMINACLIP:$trimmomatic/adapters/TruSeq3-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:25</code></pre>
+</div>
+<div id="trinity.sh" class="section level2">
+<h2><code>trinity.sh</code></h2>
+<pre class="bash"><code>#!/bin/bash
+#SBATCH --job-name=trinity
+#SBATCH --partition=compute
+#SBATCH --mem=80G
+#SBATCH --time=3-00:00:00
+#SBATCH --cpus-per-task=12
+##SBATCH --mail-user=%u@oist.jp
+##SBATCH --mail-type=BEGIN,FAIL,END
+#SBATCH --input=none
+#SBATCH --output=%j.out
+##SBATCH --error=job_%j.err
+. $HOME/.bashrc
+
+species=lf
+refdir=../data/raw_reads/merged
+module load Trinity/2.1.1  bowtie/1.1.0
+Trinity --seqType fq --max_memory 75G --left $refdir/&quot;$species&quot;_1.fastq.gz \
+ --right  $refdir/&quot;$species&quot;_2.fastq.gz  \
+    --CPU 12 --output ../data/assembly/trinity_&quot;$species&quot;</code></pre>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.5.1 (2018-07-02)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS High Sierra 10.13.6
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_AU.UTF-8/en_AU.UTF-8/en_AU.UTF-8/C/en_AU.UTF-8/en_AU.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+loaded via a namespace (and not attached):
+ [1] workflowr_1.1.1   Rcpp_1.0.0        lattice_0.20-35  
+ [4] digest_0.6.18     rprojroot_1.3-2   R.methodsS3_1.7.1
+ [7] grid_3.5.1        jsonlite_1.6      backports_1.1.2  
+[10] git2r_0.23.0      magrittr_1.5      evaluate_0.11    
+[13] stringi_1.3.1     whisker_0.3-2     R.oo_1.22.0      
+[16] R.utils_2.7.0     Matrix_1.2-14     reticulate_1.10  
+[19] rmarkdown_1.10    tools_3.5.1       stringr_1.3.1    
+[22] yaml_2.2.0        compiler_3.5.1    htmltools_0.3.6  
+[25] knitr_1.20       </code></pre>
+</div>
+</div>
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+<hr>
+<p>
+  This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
+  analysis was created with
+  <a href="https://github.com/jdblischak/workflowr">workflowr</a> 1.1.1
+</p>
+<hr>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
