@@ -15,7 +15,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -195,9 +195,10 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jdblischak/workflowr">
+  <a href="https://github.com/lukeholman/queen-pheromone-RNAseq">
     <span class="fa fa-github"></span>
      
+    Source code
   </a>
 </li>
       </ul>
@@ -221,19 +222,65 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2019-03-07</p>
-<strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
-<ul>
-<li>
-<details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>R Markdown file:</strong> up-to-date </summary></p>
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
-</details>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> 934cda8 </summary></p>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-03-07
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>queen-pheromone-RNAseq/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtreef831611366f4853ff2f41f5f5dd9dad7087d25d4targetblankf831611a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/tree/f831611366f4853ff2f41f5f5dd9dad7087d25d4" target="_blank">f831611</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtreef831611366f4853ff2f41f5f5dd9dad7087d25d4targetblankf831611a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
@@ -241,105 +288,129 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    data/.DS_Store
+    Ignored:    data/apis_gene_comparisons/.DS_Store
+    Ignored:    data/apis_gene_comparisons/wojciechowski_histone_data/.DS_Store
+    Ignored:    data/apis_gene_comparisons/wojciechowski_histone_data/GSE110640_RAW/.DS_Store
+    Ignored:    data/apis_gene_comparisons/wojciechowski_histone_data/GSE110641_RAW/.DS_Store
+    Ignored:    data/component spreadsheets of queen_pheromone.db/.DS_Store
+    Ignored:    docs/figure/pdf_supplementary_material.Rmd/
+    Ignored:    figures/
+    Ignored:    manuscript/
+    Ignored:    supplement/
 
 Untracked files:
-    Untracked:  analysis/README.md
-    Untracked:  analysis/queen_pheromone.Rmd
-    Untracked:  bioinformatics scripts/
-    Untracked:  code/Script to make the donut plot.R
-    Untracked:  code/Script to run multivariate brms model.R
-    Untracked:  code/Script to set up for GO analyses.R
-    Untracked:  code/pdf_supplementary_material.Rmd
-    Untracked:  code/pdf_supplementary_material.pdf
-    Untracked:  code/wojciechowski_histone_analysis.R
-    Untracked:  data/apis.org.db
-    Untracked:  data/apis_gene_comparisons/
-    Untracked:  data/brms_model.txt
-    Untracked:  data/brms_model_comparisons.rds
-    Untracked:  data/brms_model_summary.rds
-    Untracked:  data/component spreadsheets of queen_pheromone.db/
-    Untracked:  data/gene_set_collection.RData
-    Untracked:  data/gene_set_collection_kegg.RData
-    Untracked:  data/morandin_comparison_data/
-    Untracked:  data/most.pheromone.sensitive.genes.rds
-    Untracked:  data/queen_pheromone.db
-    Untracked:  docs/figure/
-    Untracked:  figures/
-    Untracked:  manuscript/
-    Untracked:  supplement/
+    Untracked:  bioinformatics_scripts/
+    Untracked:  blockwiseTOM-block.1.RData
 
 Unstaged changes:
-    Modified:   .gitignore
-    Deleted:    data/README.md
+    Deleted:    bioinformatics scripts/README.md
+    Deleted:    bioinformatics scripts/data
+    Deleted:    bioinformatics scripts/ebseq.sh
+    Deleted:    bioinformatics scripts/kallisto.sh
+    Deleted:    bioinformatics scripts/orthodb.py
+    Deleted:    bioinformatics scripts/ref
+    Deleted:    bioinformatics scripts/rsem-generate-data-matrix
+    Deleted:    bioinformatics scripts/rsem.sh
+    Deleted:    bioinformatics scripts/tophat.sh
+    Deleted:    bioinformatics scripts/transdecoder.sh
+    Deleted:    bioinformatics scripts/trimmomatic.sh
+    Deleted:    bioinformatics scripts/trinity.sh
 
 </code></pre>
+<p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
-</details>
-</li>
-</ul>
-<details>
-<summary> <small><strong>Expand here to see past versions:</strong></small> </summary>
-<ul>
-<table style="border-collapse:separate; border-spacing:5px;">
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 File
 </th>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
-<th style="text-align:left;">
+<th>
 Message
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-Rmd
+<td>
+html
 </td>
-<td style="text-align:left;">
-934cda8
+<td>
+<a href="https://rawcdn.githack.com/lukeholman/queen-pheromone-RNAseq/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/index.html" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
-<td style="text-align:left;">
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/934cda866c28b00edf31a737f465959b013953bc/analysis/index.Rmd" target="_blank">934cda8</a>
+</td>
+<td>
+Luke Holman
+</td>
+<td>
+2019-03-07
+</td>
+<td>
 First commit of new website structure
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td>
 Rmd
 </td>
-<td style="text-align:left;">
-6715b66
+<td>
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/6715b66b3fa2f0f6ab42b9c0c9c2498dc6e3afec/analysis/index.Rmd" target="_blank">6715b66</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
-<td style="text-align:left;">
+<td>
 Start workflowr project.
 </td>
 </tr>
 </tbody>
 </table>
-</ul>
-</details>
-<hr />
+</div>
+<hr>
+</div>
+</div>
+</div>
 <p>This website presents all the code used for the paper <em>Comparative transcriptomics of social insect queen pheromones</em> by Holman, Helantera, Trontti, and Mikheyev (2019, <em>Nature Communications</em>).</p>
 <div id="bioinformatics" class="section level1">
 <h1>Bioinformatics</h1>
@@ -349,6 +420,7 @@ Start workflowr project.
 <h1>Statistics and plotting</h1>
 <p>Click <a href="statistical-analysis.html">here</a> to see a report generated with R Markdown, which details all statistical analyses, and generates all the figures and tables. Primary author: Luke Holman.</p>
 </div>
+
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
 TeX fonts only; see
@@ -361,14 +433,6 @@ footer is added to webpages before the MathJax javascript. -->
     "HTML-CSS": { availableFonts: ["TeX"] }
   });
 </script>
-
-<hr>
-<p>
-  This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
-  analysis was created with
-  <a href="https://github.com/jdblischak/workflowr">workflowr</a> 1.1.1
-</p>
-<hr>
 
 
 

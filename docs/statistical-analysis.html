@@ -17,7 +17,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -305,9 +305,10 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/jdblischak/workflowr">
+  <a href="https://github.com/lukeholman/queen-pheromone-RNAseq">
     <span class="fa fa-github"></span>
      
+    Source code
   </a>
 </li>
       </ul>
@@ -341,37 +342,113 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2019-03-07</p>
-<strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
-<ul>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
 <li>
-<details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>R Markdown file:</strong> up-to-date </summary></p>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-03-07
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>queen-pheromone-RNAseq/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
 <p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
-</details>
-</li>
-<li>
-<details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Environment:</strong> empty </summary></p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
 <p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
-</details>
-</li>
-<li>
-<details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Seed:</strong> <code>set.seed(20190307)</code> </summary></p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20190307code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20190307)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20190307code" class="panel-collapse collapse">
+<div class="panel-body">
 <p>The command <code>set.seed(20190307)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
-</details>
-</li>
-<li>
-<details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Session information:</strong> recorded </summary></p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
 <p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
-</details>
-</li>
-<li>
-<details>
-<p><summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/tree/67d58f327a0aef60ee00d3372a21b65850a02ee3" target="_blank">67d58f3</a> </summary></p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtreef831611366f4853ff2f41f5f5dd9dad7087d25d4targetblankf831611a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/tree/f831611366f4853ff2f41f5f5dd9dad7087d25d4" target="_blank">f831611</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtreef831611366f4853ff2f41f5f5dd9dad7087d25d4targetblankf831611a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
@@ -389,77 +466,119 @@ Ignored files:
     Ignored:    manuscript/
     Ignored:    supplement/
 
+Untracked files:
+    Untracked:  bioinformatics_scripts/
+    Untracked:  blockwiseTOM-block.1.RData
+
 Unstaged changes:
-    Modified:   .gitignore
+    Deleted:    bioinformatics scripts/README.md
+    Deleted:    bioinformatics scripts/data
+    Deleted:    bioinformatics scripts/ebseq.sh
+    Deleted:    bioinformatics scripts/kallisto.sh
+    Deleted:    bioinformatics scripts/orthodb.py
+    Deleted:    bioinformatics scripts/ref
+    Deleted:    bioinformatics scripts/rsem-generate-data-matrix
+    Deleted:    bioinformatics scripts/rsem.sh
+    Deleted:    bioinformatics scripts/tophat.sh
+    Deleted:    bioinformatics scripts/transdecoder.sh
+    Deleted:    bioinformatics scripts/trimmomatic.sh
+    Deleted:    bioinformatics scripts/trinity.sh
 
 </code></pre>
+<p>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
-</details>
-</li>
-</ul>
-<details>
-<summary> <small><strong>Expand here to see past versions:</strong></small> </summary>
-<ul>
-<table style="border-collapse:separate; border-spacing:5px;">
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 File
 </th>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
-<th style="text-align:left;">
+<th>
 Message
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 html
 </td>
-<td style="text-align:left;">
-<a href="https://cdn.rawgit.com/lukeholman/queen-pheromone-RNAseq/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/statistical-analysis.html" target="_blank">f260a62</a>
+<td>
+<a href="https://rawcdn.githack.com/lukeholman/queen-pheromone-RNAseq/d5a6a734087ac51c02f725340abbd2a1f4b99326/docs/statistical-analysis.html" target="_blank">d5a6a73</a>
 </td>
-<td style="text-align:left;">
-Luke Holman
+<td>
+lukeholman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
-<td style="text-align:left;">
+<td>
 Build site.
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-Rmd
+<td>
+html
 </td>
-<td style="text-align:left;">
-<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/934cda866c28b00edf31a737f465959b013953bc/analysis/statistical-analysis.Rmd" target="_blank">934cda8</a>
+<td>
+<a href="https://rawcdn.githack.com/lukeholman/queen-pheromone-RNAseq/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/statistical-analysis.html" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
-<td style="text-align:left;">
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/934cda866c28b00edf31a737f465959b013953bc/analysis/statistical-analysis.Rmd" target="_blank">934cda8</a>
+</td>
+<td>
+Luke Holman
+</td>
+<td>
+2019-03-07
+</td>
+<td>
 First commit of new website structure
 </td>
 </tr>
 </tbody>
 </table>
-</ul>
-</details>
-<hr />
+</div>
+<hr>
+</div>
+</div>
+</div>
 <p>This document was written in R Markdown, and translated into html using the R package <code>knitr</code>. Press the buttons labelled <strong>Code</strong> to show or hide the R code used to produce each table, plot or statistical result. You can also select <strong>Show all code</strong> at the top of the page.</p>
 <div id="load-r-libraries-install-first-from-cran-or-bioconductor" class="section level3">
 <h3>Load R libraries (install first from CRAN or Bioconductor)</h3>
@@ -597,37 +716,43 @@ fig_S1 &lt;- data.frame(id = rownames(expression.data), nmds.output$conf[[length
 saveRDS(fig_S1, file = &quot;supplement/fig_S1.rds&quot;)
 fig_S1</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/outliers-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of outliers-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-outliers-1">
+Past versions of outliers-1.png
+</button>
+</p>
+<div id="fig-outliers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/outliers-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br/><br/> <strong>Figure S1</strong>: After reducing the transcriptome data to two axes using non-metric multidimensional scaling, four <em>Lasius</em> samples were clear outliers.</p>
 <pre class="r"><code>set.seed(1) # nmds involves random numbers, so make this plot reproducible
 expression.data &lt;- make.OGGs(c(&quot;am&quot;, &quot;bt&quot;, &quot;ln&quot;, &quot;lf&quot;), bad.samples = bad.samples)[[1]]
@@ -646,37 +771,43 @@ fig_S2 &lt;- data.frame(id = rownames(expression.data),
 saveRDS(fig_S2, file = &quot;supplement/fig_S2.rds&quot;)
 fig_S2</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/no.outliers-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of no.outliers-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no.outliers-1">
+Past versions of no.outliers-1.png
+</button>
+</p>
+<div id="fig-no.outliers-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/no.outliers-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br/><br/> <strong>Figure S2</strong>: With the four problematic samples removed, the samples cluster according to species with no obvious outliers.</p>
 </div>
 </div>
@@ -12304,37 +12435,43 @@ heat.map.figure &lt;- species.combinations %&gt;% ggplot(aes(Species1, Species2,
   scale_y_discrete(labels = c(&quot;Bombus\nterrestris&quot;, &quot;Lasius\nflavus&quot;, &quot;Lasius\nniger&quot;), expand = c(0,0)) 
 heat.map.figure</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-15-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-15-1">
+Past versions of unnamed-chunk-15-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-15-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-15-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <pre class="r"><code>ggsave(heat.map.figure, file = &quot;figures/Correlations heat map.pdf&quot;, height = 4, width=4.3)</code></pre>
 <pre class="r"><code># Make a scatterplot showing the correlations
 combos &lt;- t(combn(c(&quot;am&quot;, &quot;bt&quot;, &quot;lf&quot;, &quot;ln&quot;), 2))
@@ -12361,37 +12498,43 @@ fig_S3 &lt;- scatter_plot_data %&gt;%
 saveRDS(fig_S3, file = &quot;supplement/fig_S3.rds&quot;)
 fig_S3</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-16-1.png" width="576" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-16-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-16-1">
+Past versions of unnamed-chunk-16-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-16-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br/><br/> <strong>Figure S3</strong>: Each scatterplot shows the correlation in pheromone sensitivity across pairs of orthologous genes, for each of the six possible species pairs. Species 1 refers to the first-listed species, such that in the top-left panel, <em>Apis mellifera</em> is plotted on the x-axis and <em>Bombus terrestris</em> is on the y-axis. The regression lines are from a simple linear regression, and the grey zone around the line shows its 95% confidence intervals.</p>
 </div>
 </div>
@@ -12420,37 +12563,43 @@ Luke Holman
 saveRDS(fig_S4, file = &quot;supplement/fig_S4.rds&quot;)
 fig_S4</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-17-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-17-1">
+Past versions of unnamed-chunk-17-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-17-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-17-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br/><br/> <strong>Figure S4</strong>: Distribution of isoform numbers per gene for each of the four species.</p>
 <pre class="r"><code># Define a function to search for significantly alternatively spliced genes. We define these as genes that have at least two differentially expressed isoforms, where queen pheromone stimulates expresison of one isoform but surpresses expression of another
 find.alternatively.spliced.genes &lt;- function(species){
@@ -15966,37 +16115,43 @@ XP_016767817.1
 ln.alt &lt;- ln.alt.splice$Name[ln.alt.splice$Name != &quot; &quot;]
 venn(list(Apis = am.alt.splice$Name,`L. flavus` = lf.alt,`L. niger` = ln.alt))</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/splice.venn-1.png" width="672" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of splice.venn-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-splice.venn-1">
+Past versions of splice.venn-1.png
+</button>
+</p>
+<div id="fig-splice.venn-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/splice.venn-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 </div>
 </div>
 <div id="gene-co-expression-network-analysis" class="section level2">
@@ -16163,37 +16318,43 @@ treatments.network.plot &lt;- function(dat){
 
 eigen.data %&gt;% treatments.network.plot()</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-20-1.png" width="864" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-20-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-20-1">
+Past versions of unnamed-chunk-20-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-20-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-20-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <pre class="r"><code>ggsave(eigen.data %&gt;% treatments.network.plot(), 
        file = &quot;figures/Figure 3 - Module eigengenes.pdf&quot;, height = 6.6, width = 8)</code></pre>
 <p><br/><br/> <strong>Figure 3</strong>: The figure shows the distribution of module eigengenes for each combination of module, species, and queen pheromone (QP) treatment. Positive values mean that the focal group has higher eigengenes, which derived from the relative expression levels of a module of genes, than the average.</p>
@@ -16419,37 +16580,43 @@ Luke Holman
 
 meta.module.plot(network)</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-23-1.png" width="576" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-23-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-23-1">
+Past versions of unnamed-chunk-23-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-23-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-23-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br/><br/> Dendrogram and heat map showing the correlations among module eigengene values and the queen pheromone treatment (QP; coded as zero and 1 for the control and treatment respectively). Modules with red colour, or which are close on the dendrogram, show more correlated expression. The queen pheromone treatment was correlated with Module 5, but was relatively uncorrelated with the other modules.</p>
 <p><strong>Table S16</strong>: Results of Spearman’s rank correlations testing for a relationship between the effect of queen pheromone on gene expression, and the connectedness of the gene. Negative values of Spearman’s Rho mean that highly pheromone-sensitive genes tend to have lower connectedness.</p>
 <pre class="r"><code>load(&quot;blockwiseTOM-block.1.RData&quot;) # Load the TOM from the network analysis - can be used to find connectedness for each ortholog
@@ -16641,37 +16808,43 @@ correlation.plot &lt;- cor.matrix %&gt;%
 ggsave(correlation.plot, file = &quot;figures/Figure 5 - correlations.pdf&quot;, width = 8, height = 8)
 correlation.plot</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-24-1.png" width="864" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-24-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-24-1">
+Past versions of unnamed-chunk-24-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-24-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-24-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br/><br/> <strong>Figure 5</strong>: Spearman correlations for various gene-level measurements from the present study and earlier research, for <em>Apis mellifera</em> (measurements from the present study are shown in bold). ‘Pheromone sensitivity’ was calculated as the absolute value of the Log<span class="math inline">\(_2\)</span> fold difference in expression between pheromone treatment and the control. Expression level shows the logarithm of the average across our 6 <em>Apis</em> libraries. For the ‘Upregulation in queens/fertile workers’ data (Grozinger et al. 2007), positive values denote genes that have higher expression in queens or fertile workers, relative to sterile workers. For the three histone modification variables (Wojciechowski et al. 2018), high values indicate that the modification is more abundant in queen-destined larvae, and low values indicate it is more abundant in worker-destined larvae. The two DNA methylation variables give two different measures of the amount of gene body DNA methylation, namely an indirect measure (-log CpG O/E ratio) and a direct measure (BiS-seq, Galbraith et al. 2016). Codon usage bias was estimated using the codon adaptation index: high values indicate bias for particular synonymous codons. Lastly, the parameter gamma (<span class="math inline">\(\gamma\)</span>) describes the form of selection, where positive values denote positive selection, and negative values purifying selection (data from Hunt et al. 2014).</p>
 </div>
 <div id="contrasting-our-lasius-data-with-results-from-morandin-et-al.-2016" class="section level2">
@@ -17765,37 +17938,54 @@ figure2 &lt;- make_enrichment_heatmap(GO_and_KEGG_results_GSEA, pval_cutoff = 0.
 ggsave(figure2, file = &quot;figures/Figure 2 - GO and KEGG.pdf&quot;, height = 11.8, width = 9.5)
 grid.draw(figure2)</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-28-1.png" width="864" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-28-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-28-1">
+Past versions of unnamed-chunk-28-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-28-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/d5a6a734087ac51c02f725340abbd2a1f4b99326/docs/figure/statistical-analysis.Rmd/unnamed-chunk-28-1.png" target="_blank">d5a6a73</a>
+</td>
+<td>
+lukeholman
+</td>
+<td>
+2019-03-07
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-28-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><strong>Figure 2</strong>: A list of all the Gene Ontology (GO) and Kyoto Encyclopedia of Genes and Genomes (KEGG) terms that were significantly enriched or de-enriched among pheromone-sensitive genes in at least one of the four species. The colour shows the normalised expression score from gene set enrichment analysis; positive (red) values indicate that the ontology term is over-represented among genes whose expression is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among these genes. Asterisks denote statistically significant enrichment (p &lt; 0.05), and double asterisks mark results that remained significant after Benjamini-Hochberg correction. Empty squares denote cases where we did not find at least 5 genes annotated with the focal term.</p>
 </div>
 <div id="tabular-results-for-gsea-for-pheromone-sensitivity-in-gene-expression" class="section level3 tabset">
@@ -17916,7 +18106,7 @@ GO: Biological process
 0.0165403
 </td>
 <td style="text-align:right;">
-0.0984543
+0.0997411
 </td>
 <td style="text-align:right;">
 -1.652894
@@ -17968,7 +18158,7 @@ GO: Biological process
 0.0447761
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1410935
 </td>
 <td style="text-align:right;">
 -1.457013
@@ -18072,7 +18262,7 @@ GO: Cellular component
 0.0444840
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1410935
 </td>
 <td style="text-align:right;">
 -1.464557
@@ -18098,7 +18288,7 @@ GO: Cellular component
 0.0488951
 </td>
 <td style="text-align:right;">
-0.1438091
+0.1446433
 </td>
 <td style="text-align:right;">
 1.232225
@@ -18228,7 +18418,7 @@ GO: Molecular function
 0.0124725
 </td>
 <td style="text-align:right;">
-0.0944885
+0.0917095
 </td>
 <td style="text-align:right;">
 1.537033
@@ -18430,7 +18620,7 @@ GO: Biological process
 0.0121690
 </td>
 <td style="text-align:right;">
-0.0944885
+0.0917095
 </td>
 <td style="text-align:right;">
 1.588706
@@ -18505,13 +18695,13 @@ GO: Biological process
 <a href="GO:0042742" class="uri">GO:0042742</a>
 </td>
 <td style="text-align:right;">
-0.0467911
+0.0444419
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1410935
 </td>
 <td style="text-align:right;">
-1.473092
+1.475695
 </td>
 <td style="text-align:left;">
 406143 406140 100576745 725074
@@ -18872,7 +19062,7 @@ GO: Molecular function
 0.0451943
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1410935
 </td>
 <td style="text-align:right;">
 1.394571
@@ -18898,7 +19088,7 @@ GO: Molecular function
 0.0468442
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1413475
 </td>
 <td style="text-align:right;">
 1.460218
@@ -18950,7 +19140,7 @@ KEGG:00910
 0.0149136
 </td>
 <td style="text-align:right;">
-0.0960980
+0.0981156
 </td>
 <td style="text-align:right;">
 1.563268
@@ -19100,7 +19290,7 @@ GO: Biological process
 0.0144071
 </td>
 <td style="text-align:right;">
-0.0960980
+0.0976497
 </td>
 <td style="text-align:right;">
 1.597910
@@ -19120,39 +19310,13 @@ probable U3 small nucleolar RNA-associated protein 11; WD repeat-containing prot
 GO: Biological process
 </td>
 <td style="text-align:left;">
-<a href="GO:0042742" class="uri">GO:0042742</a>
-</td>
-<td style="text-align:right;">
-0.0149913
-</td>
-<td style="text-align:right;">
-0.0960980
-</td>
-<td style="text-align:right;">
-1.568669
-</td>
-<td style="text-align:left;">
-406142 406143
-</td>
-<td style="text-align:left;">
-defense response to bacterium
-</td>
-<td style="text-align:left;">
-hymenoptaecin; defensin 1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GO: Biological process
-</td>
-<td style="text-align:left;">
 <a href="GO:0006633" class="uri">GO:0006633</a>
 </td>
 <td style="text-align:right;">
 0.0161826
 </td>
 <td style="text-align:right;">
-0.0984543
+0.0997411
 </td>
 <td style="text-align:right;">
 1.582131
@@ -19165,6 +19329,32 @@ fatty acid biosynthetic process
 </td>
 <td style="text-align:left;">
 elongation of very long chain fatty acids protein AAEL008004-like; elongation of very long chain fatty acids protein 1-like; elongation of very long chain fatty acids protein 6; elongation of very long chain fatty acids protein AAEL008004; acyl-CoA Delta(11) desaturase; very-long-chain (3R)-3-hydroxyacyl-CoA dehydratase 2; elongation of very long chain fatty acids protein AAEL008004-like
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GO: Biological process
+</td>
+<td style="text-align:left;">
+<a href="GO:0042742" class="uri">GO:0042742</a>
+</td>
+<td style="text-align:right;">
+0.0167565
+</td>
+<td style="text-align:right;">
+0.0997411
+</td>
+<td style="text-align:right;">
+1.548288
+</td>
+<td style="text-align:left;">
+406142 406143
+</td>
+<td style="text-align:left;">
+defense response to bacterium
+</td>
+<td style="text-align:left;">
+hymenoptaecin; defensin 1
 </td>
 </tr>
 <tr>
@@ -19256,7 +19446,7 @@ GO: Cellular component
 0.0144522
 </td>
 <td style="text-align:right;">
-0.0960980
+0.0976497
 </td>
 <td style="text-align:right;">
 1.577040
@@ -19357,13 +19547,13 @@ GO: Molecular function
 <a href="GO:0004984" class="uri">GO:0004984</a>
 </td>
 <td style="text-align:right;">
-0.0145388
+0.0120537
 </td>
 <td style="text-align:right;">
-0.0960980
+0.0917095
 </td>
 <td style="text-align:right;">
-1.453275
+1.443650
 </td>
 <td style="text-align:left;">
 725384 725205
@@ -19386,7 +19576,7 @@ GO: Molecular function
 0.0162086
 </td>
 <td style="text-align:right;">
-0.0984543
+0.0997411
 </td>
 <td style="text-align:right;">
 1.542631
@@ -19646,7 +19836,7 @@ KEGG:04080
 0.0118545
 </td>
 <td style="text-align:right;">
-0.0944885
+0.0917095
 </td>
 <td style="text-align:right;">
 1.560081
@@ -19750,7 +19940,7 @@ KEGG:00630
 0.0495742
 </td>
 <td style="text-align:right;">
-0.1441111
+0.1446433
 </td>
 <td style="text-align:right;">
 1.413485
@@ -19923,13 +20113,13 @@ GO: Cellular component
 <a href="GO:0005680" class="uri">GO:0005680</a>
 </td>
 <td style="text-align:right;">
-0.0470307
+0.0497573
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1446433
 </td>
 <td style="text-align:right;">
--1.492933
+-1.486516
 </td>
 <td style="text-align:left;">
 413499 413293 409810
@@ -20108,7 +20298,7 @@ GO: Molecular function
 0.0457143
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1410935
 </td>
 <td style="text-align:right;">
 -1.483124
@@ -20160,7 +20350,7 @@ KEGG:03050
 0.0129090
 </td>
 <td style="text-align:right;">
-0.0949194
+0.0922074
 </td>
 <td style="text-align:right;">
 1.475489
@@ -20212,7 +20402,7 @@ KEGG:00260
 0.0469274
 </td>
 <td style="text-align:right;">
-0.1399723
+0.1413475
 </td>
 <td style="text-align:right;">
 1.401367
@@ -20394,37 +20584,54 @@ splicing_correlations %&gt;% pander(split.cell = 40, split.table = Inf)</code></
 saveRDS(fig_S5, file = &quot;supplement/fig_S5.rds&quot;)
 fig_S5 %&gt;% grid.draw()</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-35-1.png" width="768" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-35-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-35-1">
+Past versions of unnamed-chunk-35-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-35-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
+<a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/d5a6a734087ac51c02f725340abbd2a1f4b99326/docs/figure/statistical-analysis.Rmd/unnamed-chunk-35-1.png" target="_blank">d5a6a73</a>
+</td>
+<td>
+lukeholman
+</td>
+<td>
+2019-03-07
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-35-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br></br> <strong>Figure S5</strong>: Genes for which alternative splicing is strongly affected by queen pheromone tend to have similar Gene Ontology and KEGG terms in ants and bees, although the data do not provide strong evidence for or against inter-species similarity. The colour shows the normalised expression score from a GSEA (gene set enrichment analysis) test implemented in the R package <code>fgsea</code>; positive (red) values indicate that the GO or KEGG term is over-represented among genes whose splicing is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among those genes. Asterisks denote statistically significant enrichment (p &lt; 0.05), and double asterisks mark results that remained significant after adjusting the p-values for multiple testing using the Benjamini-Hochberg method. Empty squares denote cases where we did not find at least 5 alternatively spliced genes annotated with the focal term.</p>
 </div>
 <div id="tabular-results-for-gsea-for-pheromone-sensitivity-of-alternative-splicing" class="section level3">
@@ -20741,13 +20948,13 @@ GO: Biological process
 <a href="GO:0007034" class="uri">GO:0007034</a>
 </td>
 <td style="text-align:right;">
-0.0223523
+0.0212540
 </td>
 <td style="text-align:right;">
 0.1145620
 </td>
 <td style="text-align:right;">
--1.593805
+-1.598898
 </td>
 <td style="text-align:left;">
 550738 411857 410607 410883
@@ -20773,7 +20980,7 @@ GO: Biological process
 0.0449834
 </td>
 <td style="text-align:right;">
-0.1531553
+0.1544974
 </td>
 <td style="text-align:right;">
 1.363095
@@ -20802,7 +21009,7 @@ GO: Biological process
 0.0476190
 </td>
 <td style="text-align:right;">
-0.1531553
+0.1544974
 </td>
 <td style="text-align:right;">
 -1.428849
@@ -20828,13 +21035,13 @@ GO: Cellular component
 <a href="GO:0005886" class="uri">GO:0005886</a>
 </td>
 <td style="text-align:right;">
-0.0031019
+0.0020002
 </td>
 <td style="text-align:right;">
-0.0725780
+0.0656451
 </td>
 <td style="text-align:right;">
-1.542200
+1.544774
 </td>
 <td style="text-align:left;">
 100578210 100577938 100577446 100577755 725297 100578083 100577334 411760 100578230 725205 551782
@@ -20973,13 +21180,13 @@ GO: Molecular function
 <a href="GO:0004252" class="uri">GO:0004252</a>
 </td>
 <td style="text-align:right;">
-0.0482544
+0.0488148
 </td>
 <td style="text-align:right;">
-0.1531553
+0.1549339
 </td>
 <td style="text-align:right;">
-1.402047
+1.398450
 </td>
 <td style="text-align:left;">
 726126 410438 724145 413645 724917 410894 724308 411358 409143 726718
@@ -21179,7 +21386,7 @@ KEGG:00190
 0.0024240
 </td>
 <td style="text-align:right;">
-0.0725780
+0.0656451
 </td>
 <td style="text-align:right;">
 1.681785
@@ -21208,7 +21415,7 @@ KEGG:00860
 0.0026977
 </td>
 <td style="text-align:right;">
-0.0725780
+0.0656451
 </td>
 <td style="text-align:right;">
 1.681653
@@ -21295,7 +21502,7 @@ KEGG:01100
 0.0467953
 </td>
 <td style="text-align:right;">
-0.1531553
+0.1544974
 </td>
 <td style="text-align:right;">
 1.162914
@@ -21527,7 +21734,7 @@ GO: Molecular function
 0.0472047
 </td>
 <td style="text-align:right;">
-0.1531553
+0.1544974
 </td>
 <td style="text-align:right;">
 1.289588
@@ -21963,37 +22170,43 @@ module_GO_table &lt;- make_module_GO_table()</code></pre>
 ggsave(module_KEGG, file = &quot;figures/Figure 4 - module KEGG.pdf&quot;, height = 7, width = 8)
 module_KEGG</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-38-1.png" width="864" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-38-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-38-1">
+Past versions of unnamed-chunk-38-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-38-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-38-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br></br> <strong>Figure 4</strong>: Results of KEGG pathway enrichment analysis for the genes in each of the three significantly pheromone-sensitive transcriptional modules. The gene universe was defined as all genes for which we found an ortholog in all four species (i.e. the set that was used to discover these co-expressed modules). All KEGG terms shown in green were significantly enriched (p &lt; 0.05), and those shown in purple remained significant after correction for multiple testing. Fold enrichment was calculated as the proportion of genes associated with the focal KEGG term in the module, divided by the equivalent proportion in the gene universe.</p>
 </div>
 <div id="go-bp" class="section level4">
@@ -22005,37 +22218,43 @@ Luke Holman
 saveRDS(fig_S6, file = &quot;supplement/fig_S6.rds&quot;)
 fig_S6</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-39-1.png" width="864" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-39-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-39-1">
+Past versions of unnamed-chunk-39-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-39-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-39-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br></br> <strong>Figure S6</strong>: Comparable figure to Figure 4, showing the results of GO: Biological process enrichment analysis instead of KEGG pathways.</p>
 </div>
 <div id="go-mf" class="section level4">
@@ -22047,37 +22266,43 @@ Luke Holman
 saveRDS(fig_S7, file = &quot;supplement/fig_S7.rds&quot;)
 fig_S7</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-40-1.png" width="864" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-40-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-40-1">
+Past versions of unnamed-chunk-40-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-40-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-40-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br></br> <strong>Figure S7</strong>: Comparable figure to Figure 4, showing the results of GO: Molecular function enrichment analysis instead of KEGG pathways.</p>
 </div>
 <div id="go-cc" class="section level4">
@@ -22089,37 +22314,43 @@ Luke Holman
 saveRDS(fig_S8, file = &quot;supplement/fig_S8.rds&quot;)
 fig_S8</code></pre>
 <p><img src="figure/statistical-analysis.Rmd/unnamed-chunk-41-1.png" width="864" style="display: block; margin: auto;" /></p>
-<details>
-<summary><em>Expand here to see past versions of unnamed-chunk-41-1.png:</em></summary>
-<table style = "border-collapse:separate; border-spacing:5px;">
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-41-1">
+Past versions of unnamed-chunk-41-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-41-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
 <thead>
 <tr>
-<th style="text-align:left;">
+<th>
 Version
 </th>
-<th style="text-align:left;">
+<th>
 Author
 </th>
-<th style="text-align:left;">
+<th>
 Date
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td>
 <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/blob/f260a62d74dd634fde9a8dcc31269c0c408816a2/docs/figure/statistical-analysis.Rmd/unnamed-chunk-41-1.png" target="_blank">f260a62</a>
 </td>
-<td style="text-align:left;">
+<td>
 Luke Holman
 </td>
-<td style="text-align:left;">
+<td>
 2019-03-07
 </td>
 </tr>
 </tbody>
 </table>
-</details>
+</div>
+</div>
 <p><br></br> <strong>Figure S8</strong>: Comparable figure to Figure 4, showing the results of GO: Cellular component enrichment analysis instead of KEGG pathways. Module 9 is missing because no <a href="GO:CC" class="uri">GO:CC</a> terms were significantly enriched.</p>
 </div>
 </div>
@@ -111459,10 +111690,13 @@ phospholipase A1 member A-like
 </tbody>
 </table>
 </div>
-</div>
-</div>
-<div id="session-information" class="section level2">
-<h2>Session information</h2>
+<br> <br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.5.1 (2018-07-02)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
@@ -111495,7 +111729,7 @@ other attached packages:
 
 loaded via a namespace (and not attached):
   [1] backports_1.1.2               Hmisc_4.1-1                  
-  [3] fastmatch_1.1-0               workflowr_1.1.1              
+  [3] fastmatch_1.1-0               workflowr_1.2.0              
   [5] plyr_1.8.4                    igraph_1.2.1                 
   [7] lazyeval_0.2.1                splines_3.5.1                
   [9] robust_0.4-18                 digest_0.6.18                
@@ -111507,51 +111741,53 @@ loaded via a namespace (and not attached):
  [21] cluster_2.0.7-1               doParallel_1.0.14            
  [23] limma_3.36.2                  readr_1.1.1                  
  [25] annotate_1.58.0               matrixStats_0.54.0           
- [27] R.utils_2.7.0                 enrichplot_1.0.2             
- [29] colorspace_1.3-2              blob_1.1.1                   
- [31] rvest_0.3.2                   rrcov_1.4-4                  
- [33] crayon_1.3.4                  RCurl_1.95-4.11              
- [35] impute_1.54.0                 survival_2.42-6              
- [37] iterators_1.0.10              glue_1.3.0.9000              
- [39] gtable_0.2.0                  UpSetR_1.3.3                 
- [41] DEoptimR_1.0-8                scales_1.0.0                 
- [43] DOSE_3.6.1                    mvtnorm_1.0-8                
- [45] DBI_1.0.0                     viridisLite_0.3.0            
- [47] xtable_1.8-3                  htmlTable_1.12               
- [49] units_0.6-0                   foreign_0.8-71               
- [51] bit_1.1-14                    preprocessCore_1.42.0        
- [53] Formula_1.2-3                 htmlwidgets_1.2              
- [55] httr_1.3.1                    acepack_1.4.1                
- [57] pkgconfig_2.0.2               XML_3.98-1.12                
- [59] R.methodsS3_1.7.1             nnet_7.3-12                  
- [61] dbplyr_1.2.2                  later_0.7.5                  
- [63] tidyselect_0.2.5              labeling_0.3                 
- [65] rlang_0.3.1                   munsell_0.5.0                
- [67] tools_3.5.1                   evaluate_0.11                
- [69] yaml_2.2.0                    knitr_1.20                   
- [71] bit64_0.9-7                   robustbase_0.93-1.1          
- [73] caTools_1.17.1.1              ggraph_1.0.2                 
- [75] mime_0.6                      whisker_0.3-2                
- [77] R.oo_1.22.0                   DO.db_2.9                    
- [79] xml2_1.2.0                    compiler_3.5.1               
- [81] rstudioapi_0.9.0              curl_3.2                     
- [83] interactiveDisplayBase_1.18.0 tibble_2.0.99.9000           
- [85] tweenr_0.1.5                  pcaPP_1.9-73                 
- [87] stringi_1.3.1                 highr_0.7                    
- [89] lattice_0.20-35               Matrix_1.2-14                
- [91] pillar_1.3.1.9000             data.table_1.11.8            
- [93] cowplot_0.9.3                 bitops_1.0-6                 
- [95] httpuv_1.4.5                  qvalue_2.12.0                
- [97] R6_2.4.0                      latticeExtra_0.6-28          
- [99] promises_1.0.1                KernSmooth_2.23-15           
-[101] codetools_0.2-15              MASS_7.3-50                  
-[103] gtools_3.8.1                  assertthat_0.2.0             
-[105] rprojroot_1.3-2               withr_2.1.2                  
-[107] hms_0.4.2                     rpart_4.1-13                 
-[109] rmarkdown_1.10                rvcheck_0.1.0                
-[111] git2r_0.23.0                  ggforce_0.1.3                
-[113] shiny_1.2.0                   base64enc_0.1-3              </code></pre>
+ [27] enrichplot_1.0.2              colorspace_1.3-2             
+ [29] blob_1.1.1                    rvest_0.3.2                  
+ [31] rrcov_1.4-4                   crayon_1.3.4                 
+ [33] RCurl_1.95-4.11               impute_1.54.0                
+ [35] survival_2.42-6               iterators_1.0.10             
+ [37] glue_1.3.0.9000               gtable_0.2.0                 
+ [39] UpSetR_1.3.3                  DEoptimR_1.0-8               
+ [41] scales_1.0.0                  DOSE_3.6.1                   
+ [43] mvtnorm_1.0-8                 DBI_1.0.0                    
+ [45] viridisLite_0.3.0             xtable_1.8-3                 
+ [47] htmlTable_1.12                units_0.6-0                  
+ [49] foreign_0.8-71                bit_1.1-14                   
+ [51] preprocessCore_1.42.0         Formula_1.2-3                
+ [53] htmlwidgets_1.2               httr_1.3.1                   
+ [55] acepack_1.4.1                 pkgconfig_2.0.2              
+ [57] XML_3.98-1.12                 nnet_7.3-12                  
+ [59] dbplyr_1.2.2                  later_0.7.5                  
+ [61] tidyselect_0.2.5              labeling_0.3                 
+ [63] rlang_0.3.1                   munsell_0.5.0                
+ [65] tools_3.5.1                   evaluate_0.11                
+ [67] yaml_2.2.0                    knitr_1.20                   
+ [69] bit64_0.9-7                   fs_1.2.6                     
+ [71] robustbase_0.93-1.1           caTools_1.17.1.1             
+ [73] ggraph_1.0.2                  mime_0.6                     
+ [75] whisker_0.3-2                 DO.db_2.9                    
+ [77] xml2_1.2.0                    compiler_3.5.1               
+ [79] rstudioapi_0.9.0              curl_3.2                     
+ [81] interactiveDisplayBase_1.18.0 tibble_2.0.99.9000           
+ [83] tweenr_0.1.5                  pcaPP_1.9-73                 
+ [85] stringi_1.3.1                 highr_0.7                    
+ [87] lattice_0.20-35               Matrix_1.2-14                
+ [89] pillar_1.3.1.9000             data.table_1.11.8            
+ [91] cowplot_0.9.3                 bitops_1.0-6                 
+ [93] httpuv_1.4.5                  qvalue_2.12.0                
+ [95] R6_2.4.0                      latticeExtra_0.6-28          
+ [97] promises_1.0.1                KernSmooth_2.23-15           
+ [99] codetools_0.2-15              MASS_7.3-50                  
+[101] gtools_3.8.1                  assertthat_0.2.0             
+[103] rprojroot_1.3-2               withr_2.1.2                  
+[105] hms_0.4.2                     rpart_4.1-13                 
+[107] rmarkdown_1.10                rvcheck_0.1.0                
+[109] git2r_0.23.0                  ggforce_0.1.3                
+[111] shiny_1.2.0                   base64enc_0.1-3              </code></pre>
 </div>
+</div>
+</div>
+
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
 TeX fonts only; see
@@ -111564,14 +111800,6 @@ footer is added to webpages before the MathJax javascript. -->
     "HTML-CSS": { availableFonts: ["TeX"] }
   });
 </script>
-
-<hr>
-<p>
-  This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a>
-  analysis was created with
-  <a href="https://github.com/jdblischak/workflowr">workflowr</a> 1.1.1
-</p>
-<hr>
 
 
 </div>
