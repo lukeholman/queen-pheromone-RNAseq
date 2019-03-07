@@ -1,0 +1,2133 @@
+---
+title: "Statistical analysis and plots"
+author: "From: Comparative transcriptomics of social insect queen pheromones"
+date: "2019-03-07"
+output: 
+  workflowr::wflow_html:
+    code_folding: hide 
+---
+
+This document was written in R Markdown, and translated into html using the R package `knitr`. Press the buttons labelled **Code** to show or hide the R code used to produce each table, plot or statistical result. You can also select **Show all code** at the top of the page.
+
+
+### Load R libraries (install first from CRAN or Bioconductor)
+```{r message=FALSE, warning=FALSE, results="hide"}
+library(WGCNA) # Gene networks - needs 'impute' dependency: source("https://bioconductor.org/biocLite.R"); biocLite("impute")
+library(RSQLite) # Access SQLite databases
+library(reshape2) # data tidying (melt)
+library(dplyr) # data tidying
+library(tidyr) # data tidying
+library(purrr) # manipulate lists
+library(stringr) # string manipulation
+library(ggplot2) # for plots
+library(ggrepel) # for plots
+library(ggdendro) # for plots
+library(gridExtra) # for plots
+library(grid) # for plots
+library(RColorBrewer) # for plots
+library(ggjoy) # for plots
+library(gplots) # Venn diagram
+library(ecodist) # for nmds
+library(MuMIn) # for model comparison
+library(sva) # for ComBat function; install via source("https://bioconductor.org/biocLite.R"); biocLite("sva")
+library(pander) # for nice tables
+library(kableExtra) # For scrollable tables
+library(clusterProfiler) # for enrichment tests; source("https://bioconductor.org/biocLite.R"); biocLite("clusterProfiler") 
+library(fgsea) # for enrichment tests; source("https://bioconductor.org/biocLite.R"); biocLite("fgsea") 
+select <- dplyr::select
+filter <- dplyr::filter
+rename <- dplyr::rename
+
+kable.table <- function(df) {
+  kable(df, "html") %>%
+  kable_styling() %>%
+  scroll_box(height = "300px")
+}
+
+# Open database connections (Sasha uses SQL, Luke prefers dplyr)
+db <- dbConnect(SQLite(), dbname="data/queen_pheromone.db")
+my_db <- src_sqlite("data/queen_pheromone.db")
+
+# These 4 samples should NOT be used (See below). They were also removed in all non-R analyses (e.g. differential gene expression analyses using EBseq)
+bad.samples <- c("lf1", "ln1", "ln12", "lf12")
+```
+
+```{r echo=FALSE, results='hide'}
+# library(knitr) # set up cacheing to save time when re-building html document # `r opts_chunk$set(cache=TRUE)`
+```
+
+
+```{r echo=FALSE, results='hide'}
+table.counter <- 1
+figure.counter <- 2
+supp.table.counter <- 1
+supp.figure.counter <- 1
+
+numbering <- function(type){
+  focal.number <- get(type)
+  assign(type, get(type) + 1, envir = globalenv()) 
+  focal.number
+}
+```
+
+### First let's check for and remove strongly outlying samples
+
+```{r make.OGGs}
+  # Define a function to get gene expression data for a given set of orthologous genes. We define orthologous genes as those that are each other's reciprocal best BLAST. The bad.samples argument can be used to remove some named samples. By default this function logs the expression data (using log10). It returns a list with two elements: the first element is a matrix of expression data (rows = samples, cols = genes), and the second is a data frame giving the species-specific names of the orthologous genes
+make.OGGs <- function(species, bad.samples = NULL, log.data = T){
+  
+  # set up forward mappings, e.g. "am2bt", "am2lf", "am2ln"
+  forward.mappings <- paste(species[1], "2", species[2:length(species)], sep = "")
+  # and reverse mappings, e.g. "bt2am", "lf2am", "ln2am"
+  backward.mappings <- paste(species[2:length(species)], "2", species[1], sep = "")
+  items <- list() # declare empty list
+
+  for(i in 1:length(forward.mappings)){
+    
+    # make a table with 3 columns: first column has species 1 gene,
+    # second column has species 2 gene in forward mapping,
+    # third column has species 2 gene in reverse mapping (this can be NA, or different to col 2)
+    # we want the rows where cols 2 and 3 are the same, indicating reciprocity in the BLAST
+    focal <- left_join(
+      tbl(my_db, forward.mappings[i]) %>% 
+        dplyr::select(-evalue), # get the two mappings and 
+      tbl(my_db, backward.mappings[i]) %>% 
+        dplyr::select(-evalue), # merge by species 1 column
+      by = species[1]
+    ) %>% 
+      collect(n=Inf) %>% as.data.frame  # collect it all and convert to df
+    
+    # Get the RBB rows, and keep the two relevant columns
+    focal <- focal[!is.na(focal[,3]), ]
+    items[[i]] <- focal[focal[,2] == focal[,3], 1:2] 
+  }
+  rbbs <- items[[1]] # If 3 or 4 species, successively merge the results
+  if(length(items) > 1) rbbs <- left_join(rbbs, items[[2]], by = species[1])
+  if(length(items) > 2) rbbs <- left_join(rbbs, items[[3]], by = species[1])
+  
+  # Throw out species1 genes that do not have a RBB in all species
+  rbbs <- rbbs[complete.cases(rbbs), ]
+  names(rbbs) <- gsub("[.]x", "", names(rbbs)) # tidy the row and column names
+  rownames(rbbs) <- NULL
+
+  # Make sure the columns are ordered as in 'species'
+  rbbs <- rbbs[, match(names(rbbs), species)]
+
+  # We know have a list of the names of all the ortholgous genes in each species
+  # Now we use these names to look up the gene expression data for each ortholog
+  expression.tables <- paste("rsem_", species, sep = "")
+  
+  for(i in 1:length(species)){
+    focal.expression <- tbl(my_db, expression.tables[i]) %>% 
+      collect(n=Inf) %>% as.data.frame()
+    names(focal.expression)[names(focal.expression) == "gene"] <- species[i]
+    rbbs <- left_join(rbbs, focal.expression, by = species[i])
+  }
+  gene.name.mappings <- rbbs[, names(rbbs) %in% species] # save gene name mappings in separate DF
+  
+  rownames(rbbs) <- rbbs[,1] # Use the gene names for species 1 as row names
+  rbbs <- rbbs[, !(names(rbbs) %in% species)] # remove gene name columns 
+  rbbs <- t(as.matrix(rbbs))
+
+  if(log.data) rbbs <- log10(1 + rbbs)
+  if(!is.null(bad.samples)) rbbs <- rbbs[!(rownames(rbbs) %in% bad.samples), ]
+  
+  # Discard genes where NAs appear
+  gene.name.mappings <- gene.name.mappings[!(is.na(colSums(rbbs))), ]
+  rbbs <- rbbs[, !(is.na(colSums(rbbs)))]
+
+  # discard genes where expression is zero for all samples in 1 or more species
+  spp <- str_replace_all(rownames(rbbs), "[:digit:]", "")
+  to.keep <- rep(TRUE, ncol(rbbs))
+  for(i in 1:ncol(rbbs)){
+   if(min(as.numeric(tapply(rbbs[,i], spp, sum))) == 0) to.keep[i] <- FALSE
+ }
+rbbs <- rbbs[, to.keep]
+gene.name.mappings <- gene.name.mappings[to.keep, ]
+
+  list(tpm = rbbs, gene.mappings = gene.name.mappings)
+}
+```
+
+
+#### 4 of the _Lasius_ samples are highly different to all of the rest
+Closer inspection reveals that they have zeros for many of the transcripts, so perhaps they had low abundance libraries.
+```{r outliers}
+set.seed(1) # nmds involves random numbers, so make this plot reproducible
+expression.data <- make.OGGs(c("am", "bt", "ln", "lf"))[[1]]
+treatments <- tbl(my_db, "treatments") %>% as.data.frame()
+
+shhh <- capture.output(nmds.output <- dist(expression.data) %>% nmds())
+fig_S1 <- data.frame(id = rownames(expression.data), nmds.output$conf[[length(nmds.output$conf)]], stringsAsFactors = F) %>%
+  left_join(treatments, by = "id") %>% 
+  rename(Species = species, Treatment = treatment) %>%
+  ggplot(aes(X1,X2, shape = Species)) + 
+  geom_point(aes(colour = Treatment)) + 
+  geom_text_repel(aes(label = id), size=3.6) + 
+  xlab("NMDS 1") + ylab("NMDS 2")
+
+saveRDS(fig_S1, file = "supplement/fig_S1.rds")
+fig_S1
+```
+ <br/><br/> 
+**Figure S`r numbering("supp.figure.counter")`**: After reducing the transcriptome data to two axes using non-metric multidimensional scaling, four _Lasius_ samples were clear outliers.
+
+
+```{r no.outliers}
+set.seed(1) # nmds involves random numbers, so make this plot reproducible
+expression.data <- make.OGGs(c("am", "bt", "ln", "lf"), bad.samples = bad.samples)[[1]]
+
+shhh <- capture.output(nmds.output <- dist(expression.data) %>% nmds())
+fig_S2 <- data.frame(id = rownames(expression.data), 
+           nmds.output$conf[[length(nmds.output$conf)]], 
+           stringsAsFactors = F) %>%
+  left_join(treatments, by = "id") %>%
+  rename(Species = species, Treatment = treatment) %>% 
+  ggplot(aes(X1,X2)) + 
+  geom_point(aes(shape = Species, colour = Treatment)) + 
+  geom_text_repel(aes(label = id), size=3.6) + 
+  xlab("NMDS 1") + ylab("NMDS 2")
+
+saveRDS(fig_S2, file = "supplement/fig_S2.rds")
+fig_S2
+```
+ <br/><br/> 
+ **Figure S`r numbering("supp.figure.counter")`**: With the four problematic samples removed, the samples cluster according to species with no obvious outliers.
+ 
+## Table of sample sizes
+**Table S`r numbering("supp.table.counter")`**: Number of sequencing libraries for each combination of species and treatment, after removing the four problematic libraries. Each library was prepared from a pool containing equal amounts of cDNA from five individual workers, taken from the same colony. 
+```{r sample.size.table}
+sample.size.table <- treatments[treatments$id %in% rownames(expression.data),] %>% 
+  group_by(species, treatment) %>% 
+  summarise(n = n()) %>% as.data.frame()
+names(sample.size.table) <- c("Species", "Treatment", "Number of RNAseq libraries")
+
+saveRDS(sample.size.table, file = "supplement/tab_S1.rds")
+sample.size.table %>% pander()
+```
+
+
+## Lists of statistically significant differentially expressed genes {.tabset}
+Click the tabs to see the gene lists for each of the four species.
+```{r de.gene.tables}
+apis.de <- suppressMessages(tbl(my_db, "ebseq_padj_gene_am") %>% 
+  dplyr::select(gene, PostFC) %>% 
+    left_join(tbl(my_db, "bee_names")) %>% 
+    collect() %>% 
+  mutate(PostFC = round(log2(PostFC), 3)) %>% 
+    dplyr::select(gene, name, PostFC) %>% 
+    rename(Gene=gene, Name=name, Log2_FC = PostFC) %>% 
+    arrange(-abs(Log2_FC))) %>% as.data.frame()
+
+bombus.de <- suppressMessages(tbl(my_db, "ebseq_padj_gene_bt") %>% 
+  dplyr::select(gene, PostFC) %>% 
+    left_join(tbl(my_db, "bt2am") %>% rename(gene=bt)) %>% 
+    left_join(tbl(my_db, "bee_names") %>% rename(am=gene)) %>% 
+    collect() %>%
+   mutate(PostFC = round(log2(PostFC), 3), name = replace(name, is.na(name), " "), 
+          am = replace(am, is.na(am), " ")) %>% 
+  dplyr::select(gene, am, name, PostFC) %>% 
+    rename(Gene=gene, Apis_BLAST=am, Name=name, Log2_FC = PostFC) %>% 
+    arrange(-abs(Log2_FC))) %>% as.data.frame()
+
+flavus.de <- suppressMessages(tbl(my_db, "ebseq_padj_gene_lf") %>% 
+  dplyr::select(gene, PostFC) %>% 
+    left_join(tbl(my_db, "lf2am") %>% rename(gene=lf)) %>% 
+    left_join(tbl(my_db, "bee_names") %>% rename(am=gene)) %>% 
+    collect() %>%
+   mutate(PostFC = round(log2(PostFC), 3), name = replace(name, is.na(name), " "), 
+          am = replace(am, is.na(am), " ")) %>% 
+  dplyr::select(gene, am, name, PostFC) %>% 
+    rename(Gene=gene, Apis_BLAST=am, Name=name, Log2_FC = PostFC) %>%
+    arrange(-abs(Log2_FC))) %>% as.data.frame()
+
+niger.de <- suppressMessages(tbl(my_db, "ebseq_padj_gene_ln") %>% 
+  dplyr::select(gene, PostFC) %>% 
+    left_join(tbl(my_db, "ln2am") %>% rename(gene=ln)) %>% 
+    left_join(tbl(my_db, "bee_names") %>% rename(am=gene)) %>% 
+    collect() %>%
+   mutate(PostFC = round(log2(PostFC), 3), name = replace(name, is.na(name), " "), 
+          am = replace(am, is.na(am), " ")) %>% 
+  dplyr::select(gene, am, name, PostFC) %>% 
+    rename(Gene=gene, Apis_BLAST=am, Name=name, Log2_FC = PostFC) %>% 
+    arrange(-abs(Log2_FC))) %>% as.data.frame()
+
+names(apis.de) <- gsub("_", " ", names(apis.de))
+names(bombus.de) <- gsub("_", " ", names(bombus.de))
+names(flavus.de) <- gsub("_", " ", names(flavus.de))
+names(niger.de) <- gsub("_", " ", names(niger.de))
+```
+
+### _Apis mellifera_
+**Table S`r numbering("supp.table.counter")`**: List of the `r nrow(apis.de)` significantly differentially expressed genes (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Apis mellifera_, listed in order of fold change in gene expression on a Log$_2$ scale. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment.
+```{r apis.de}
+saveRDS(apis.de, file = "supplement/tab_S2.rds")
+kable.table(apis.de)
+```
+
+### _Bombus terrestris_
+**Table S`r numbering("supp.table.counter")`**: The single significantly differentially expressed gene (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Bombus terrestris_. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment. The second and third columns give the best BLAST hit for this gene in _A. mellifera_ plus the name of the _A. mellifera_ putative ortholog. 
+```{r}
+saveRDS(bombus.de, file = "supplement/tab_S3.rds")
+kable(bombus.de, "html") %>%
+  kable_styling()
+```
+
+### _Lasius flavus_
+**Table S`r numbering("supp.table.counter")`**: List of the `r nrow(flavus.de)` significantly differentially expressed genes (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Lasius flavus_, listed in order of fold change in gene expression on a Log$_2$ scale. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment. The second and third columns give the best BLAST hit for this gene in _A. mellifera_ plus the name of the _A. mellifera_ putative ortholog. 
+```{r}
+saveRDS(flavus.de, file = "supplement/tab_S4.rds")
+kable.table(flavus.de)
+```
+
+### _Lasius niger_
+**Table S`r numbering("supp.table.counter")`**: List of the `r nrow(niger.de)` significantly differentially expressed genes (EBseq; FDR-corrected posterior probability of differential expression p < 0.05) in _Lasius niger_, listed in order of fold change in gene expression on a Log$_2$ scale. Positive fold change values indicate higher expression in the control, while negative values indicate higher expression in the queen pheromone treatment. The second and third columns give the best BLAST hit for this gene in _A. mellifera_ plus the name of the _A. mellifera_ putative ortholog. 
+```{r}
+saveRDS(niger.de, file = "supplement/tab_S5.rds")
+kable.table(niger.de)
+```
+
+
+
+## Genes that are differentially expressed in multiple species
+In Tables S6-S7, we have simply listed the genes that showed statistically significant differential expression in two or more species. This method is expected to make few 'false positive' errors, but it probably misses many of true overlaps because our study has modest power to detect differential expression (that is, the 'false negative' rate is high).
+
+In Table S8, we instead look for similarities between species using a method that ranks genes from most- to least- phermone sensitive based on log fold change, alleviating the problem of low power. To do this, we select the top $n$ genes per species (where $n$ = 100, 200... 500), based on the absolute magnitude of the log fold-change response to queen pheromone, giving a list of the most pheromone-sensitive genes. This method produces fewer false negatives in our search for overlapping genes, at cost of increasing the false positive rate.
+
+```{r find.intersect, messages = FALSE, warnings = FALSE, results = "hide"}
+# Define a function to test whether the overlap of two sets of differentially expressed genes, 
+# drawn from a common pool (e.g. all the orthologs that were tested), is higher or lower than expected
+# Inspiration for this code: https://stats.stackexchange.com/questions/10328/using-rs-phyper-to-get-the-probability-of-list-overlap
+overlap.hypergeometric.test <- function(n.overlaps, num.sig1, num.sig2, num.genes, species){
+  p.smaller <- phyper(n.overlaps, num.sig1, num.genes - num.sig1, num.sig2) 
+  p.higher <- 1 - phyper(n.overlaps - 1, num.sig1, num.genes - num.sig1, num.sig2)
+  percent_of_maximum_overlaps <- 100 * n.overlaps / min(c(num.sig1, num.sig2))
+  output <- data.frame(Species = species,
+                       Test = c("Overlap is lower than expected:",
+                                  "Overlap is higher than expected:"),
+                       p = c(p.smaller, p.higher),
+                       percent_of_maximum_overlaps = round(percent_of_maximum_overlaps,1))
+  output[output$p == min(output$p), ]
+}
+
+
+
+# Apis and flavus
+af.oggs <- make.OGGs(c("am", "lf"))[[2]] # Get the orthologous gene list
+n.am <- (tbl(my_db, "ebseq_padj_gene_am") %>% 
+           filter(gene %in% af.oggs$am) %>% 
+           summarise(n=n()) %>% 
+           as.data.frame())[1,1] # Count the number of diff expressed genes that appear in the OGG list
+n.lf <- (tbl(my_db, "ebseq_padj_gene_lf") %>% 
+           filter(gene %in% af.oggs$lf) %>% summarise(n=n()) %>% 
+           as.data.frame())[1,1]
+num.oggs.af <- nrow(af.oggs) # Count the orthologous genes
+af.oggs <- suppressMessages(
+  af.oggs %>% 
+    filter(am %in% (tbl(my_db, "ebseq_padj_gene_am") %>% 
+                      as.data.frame())[,1],
+           lf %in% (tbl(my_db, "ebseq_padj_gene_lf") %>% 
+                      as.data.frame())[,1]) %>% 
+    mutate(Species = "Apis and L. flavus") %>% 
+    left_join(tbl(my_db, "ebseq_gene_am") %>% 
+                dplyr::select(gene, PostFC) %>% 
+                rename(am=gene), copy=T) %>% 
+    rename(`Apis FC` = PostFC) %>%
+    left_join(tbl(my_db, "ebseq_gene_lf") %>% 
+                dplyr::select(gene, PostFC) %>% 
+                rename(lf=gene), copy=T) %>% 
+    rename(`L. flavus FC` = PostFC) %>%
+    left_join(tbl(my_db, "bee_names") %>% 
+                rename(am=gene), copy=T))
+num.overlap.af <- nrow(af.oggs) # Count the overlaps
+test1 <- overlap.hypergeometric.test(num.overlap.af, 
+                                     n.am, n.lf, 
+                                     num.oggs.af, 
+                                     "Apis and L. flavus") # Run the hypergeometric test
+
+
+# Apis and niger
+an.oggs <- make.OGGs(c("am", "ln"))[[2]] # Get the orthologous gene list
+n.am <- (tbl(my_db, "ebseq_padj_gene_am") %>% 
+           filter(gene %in% an.oggs$am) %>% 
+           summarise(n=n()) %>% as.data.frame())[1,1] # Count the number of diff expressed genes that appear in the OGG list
+n.ln <- (tbl(my_db, "ebseq_padj_gene_ln") %>% 
+           filter(gene %in% an.oggs$ln) %>% 
+           summarise(n=n()) %>% as.data.frame())[1,1]
+num.oggs.an <- nrow(an.oggs) # Count the orthologous genes
+an.oggs <- suppressMessages(
+  an.oggs %>% 
+    filter(am %in% (tbl(my_db, "ebseq_padj_gene_am") %>% as.data.frame())[,1],
+           ln %in% (tbl(my_db, "ebseq_padj_gene_ln") %>% as.data.frame())[,1]) %>% 
+    mutate(Species = "Apis and L. niger") %>% 
+    left_join(tbl(my_db, "ebseq_gene_am") %>% 
+                dplyr::select(gene, PostFC) %>% 
+                rename(am=gene), copy=T) %>% 
+    rename(`Apis FC` = PostFC) %>%
+    left_join(tbl(my_db, "ebseq_gene_ln") %>% 
+                dplyr::select(gene, PostFC) %>% 
+                rename(ln=gene), copy=T) %>% 
+    rename(`L. niger FC` = PostFC) %>%
+    left_join(tbl(my_db, "bee_names") %>% 
+                rename(am=gene), copy=T))
+num.overlap.an <- nrow(an.oggs) # Count the overlaps
+test2 <- overlap.hypergeometric.test(num.overlap.an, n.am, n.ln, num.oggs.an, "Apis and L. niger") # Run the hypergeometric test
+
+# flavus and niger
+fn.oggs <- make.OGGs(c("lf", "ln"))[[2]] # Get the orthologous gene list
+n.lf <- (tbl(my_db, "ebseq_padj_gene_lf") %>% 
+           filter(gene %in% fn.oggs$lf) %>%
+           summarise(n=n()) %>% as.data.frame())[1,1] # Count the number of diff expressed genes that appear in the OGG list
+n.ln <- (tbl(my_db, "ebseq_padj_gene_ln") %>% 
+           filter(gene %in% fn.oggs$ln) %>% 
+           summarise(n=n()) %>% as.data.frame())[1,1]
+num.oggs.fn <- nrow(fn.oggs) # Count the orthologous genes
+fn.oggs <- suppressMessages(
+  fn.oggs %>% filter(ln %in% (tbl(my_db, "ebseq_padj_gene_ln") %>% as.data.frame())[,1],
+                     lf %in% (tbl(my_db, "ebseq_padj_gene_lf") %>% as.data.frame())[,1]) %>% 
+    mutate(Species = "L. flavus and L. niger") %>% 
+    left_join(tbl(my_db, "ebseq_gene_lf") %>% 
+                dplyr::select(gene, PostFC) %>% 
+                rename(lf=gene), copy=T) %>% 
+    rename(`L. flavus FC` = PostFC) %>%
+    left_join(tbl(my_db, "ebseq_gene_ln") %>% 
+                dplyr::select(gene, PostFC) %>% 
+                rename(ln=gene), copy=T) %>% 
+    rename(`L. niger FC` = PostFC) %>%
+    left_join(tbl(my_db, "lf2am"), copy=T) %>%
+    left_join(tbl(my_db, "bee_names") %>% 
+                rename(am=gene), copy=T))
+num.missing <- sum(is.na(fn.oggs$name))
+fn.oggs$name[is.na(fn.oggs$name)] <- paste("Unknown gene", 1:num.missing)
+num.overlap.fn <- nrow(fn.oggs) # Count the overlaps
+test3 <- overlap.hypergeometric.test(num.overlap.fn, 
+                                     n.lf, n.ln, 
+                                     num.oggs.fn, 
+                                     "L. flavus and L. niger") # Run the hypergeometric test
+
+
+overlaps <- suppressMessages(
+  data.frame(name = unique(c(af.oggs$name, an.oggs$name, fn.oggs$name)), 
+             stringsAsFactors = F) %>%
+    left_join(rbind(af.oggs %>% dplyr::select(name, starts_with("Apis")),
+                    an.oggs %>% dplyr::select(name, starts_with("Apis")))) %>%
+    left_join(rbind(af.oggs %>% dplyr::select(name, ends_with("flavus FC")),
+                    fn.oggs %>% dplyr::select(name, ends_with("flavus FC")))) %>%
+    left_join(rbind(an.oggs %>% dplyr::select(name, ends_with("niger FC")),
+                    fn.oggs %>% dplyr::select(name, ends_with("niger FC")))) %>% distinct())
+overlaps <- rbind(overlaps[overlaps$name == "myosin light chain alkali-like isoform X5", ],
+                  overlaps[overlaps$name != "myosin light chain alkali-like isoform X5", ])
+overlaps$Consistent <- "Yes"
+overlaps$Consistent[apply(overlaps[,2:4],1,min,na.rm=T)<1 & apply(overlaps[,2:4],1,max,na.rm=T)>1] <- "No"
+for(i in 2:4) overlaps[,i] <- format(round(log2(overlaps[,i]), 3), nsmall = 3) 
+overlaps[overlaps == "    NA"] <- " "
+rownames(overlaps) <- NULL
+
+overlap.p.values <- rbind(test1, test2, test3) 
+rownames(overlap.p.values) <- NULL
+
+all.overlaps <- c(af.oggs$am, an.oggs$am, fn.oggs$am[!is.na(fn.oggs$am)]) %>% unique
+```
+
+**Table S`r numbering("supp.table.counter")`**: All orthologous genes that were significantly differentially expressed between pheromone treatments in more than one species. The FC columns give the Log$_2$ fold-change in expression for each species where the focal gene was significantly differentially expressed, where positive numbers mean it was expressed at a higher level in control animals. The last column highlights genes that responded to treatment in a consistent or inconsistent direction across species. _B. terrestris_ is omitted because neither of its differentially expressed genes were significantly affected by treatment in the other three species.
+```{r overlap.table}
+saveRDS(overlaps, file = "supplement/tab_S6.rds")
+kable.table(overlaps)
+```
+
+<br></br>
+**Table S`r numbering("supp.table.counter")`**: The overlap between the lists of significantly differently expressed orthologous genes was significantly higher than expected for _L. flavus_ and _L. niger_, suggesting that queen pheromone has conserved effects on gene expression between these two species (results based on a hypergeometric test). For the other two species pairs, the number of overlapping genes was not higher or lower than expected under the null hypothesis that queen pheromone affects a random set of genes in each species. The last column gives the number of genes that overlapped, divided by the maximum number that _could_ have overlapped given the numbers of orthologous genes that were significant in each species.
+```{r overlap.table.p}
+names(overlap.p.values)[4] <- "% of maximum possible overlap" 
+saveRDS(overlap.p.values, file = "supplement/tab_S7.rds")
+pander(overlap.p.values, split.cell = 40, split.table = Inf)
+```
+
+
+```{r results = "hide", warning=FALSE}
+most.pheromone.sensitive.genes <- function(){
+  ngenes.list <- (1:5)*100 # 100 - 500
+  
+  overlapping_genes <- list()
+  permutation_results <- list()
+  for(i in 1:length(ngenes.list)){
+    ngenes <- ngenes.list[i]
+    
+    # Get the top n genes from Apis, as ranked by the absolute value for the log-fold change in response to pheromone
+    g1 <- tbl(my_db, "ebseq_gene_am") %>% collect() %>% 
+      dplyr::select(gene, PostFC) %>% 
+      mutate(PostFC = log2(PostFC)) %>% left_join(tbl(my_db, "bee_names"), copy=TRUE, by = "gene") %>% 
+      arrange(-abs(PostFC)) 
+    
+    # Do the same for genes from non-Apis species, and get the Apis names for the top BLAST hits in the Apis genome
+    g2 <- tbl(my_db, "ebseq_gene_bt") %>% 
+      dplyr::select(gene, PostFC) %>% 
+      left_join(tbl(my_db, "bt2am") %>% 
+                  rename(gene = bt) %>% 
+                  dplyr::select(-evalue), by = "gene") %>%
+      collect() %>% mutate(PostFC = log2(PostFC)) %>% 
+      arrange(-abs(PostFC)) %>% 
+      rename(bt = gene, gene = am) %>% 
+      left_join(tbl(my_db, "bee_names"), copy=TRUE, by = "gene") %>% 
+      filter(!is.na(name)) 
+    
+    g3 <- tbl(my_db, "ebseq_gene_lf") %>% 
+      dplyr::select(gene, PostFC) %>% 
+      left_join(tbl(my_db, "lf2am") %>% 
+                  rename(gene = lf) %>% 
+                  dplyr::select(-evalue), by = "gene") %>%
+      collect() %>% mutate(PostFC = log2(PostFC)) %>% 
+      arrange(-abs(PostFC)) %>% 
+      rename(lf = gene, gene = am) %>% 
+      left_join(tbl(my_db, "bee_names"), copy=TRUE, by = "gene") %>% 
+      filter(!is.na(name)) 
+    
+    g4 <-tbl(my_db, "ebseq_gene_ln") %>% 
+      dplyr::select(gene, PostFC) %>% 
+      left_join(tbl(my_db, "ln2am") %>% 
+                  rename(gene = ln) %>% 
+                  dplyr::select(-evalue), by = "gene") %>%
+      collect() %>% mutate(PostFC = log2(PostFC)) %>% 
+      arrange(-abs(PostFC)) %>% 
+      rename(ln = gene, gene = am) %>% 
+      left_join(tbl(my_db, "bee_names"), copy=TRUE, by = "gene") %>% 
+      filter(!is.na(name)) 
+    
+    get_top <- function(x, ngenes) {x %>% head(ngenes) %>% .$name %>% unique()}
+    
+    # Count the number of intersections, and find gene names that appear in 3 or 4 species using the venn() function
+    venn.diagram <- venn(list(am=(g1 %>% get_top(ngenes)), 
+                              bt=(g2 %>% get_top(ngenes)), 
+                              lf=(g3 %>% get_top(ngenes)), 
+                              ln=(g4 %>% get_top(ngenes))), show.plot=FALSE) 
+    three.plus <- attr(venn.diagram, "intersections")[str_count(names(attr(venn.diagram, "intersections")), ":") > 1] %>% 
+      unlist %>% unname %>% unique %>% sort
+    four <- attr(venn.diagram, "intersections")[str_count(names(attr(venn.diagram, "intersections")), ":") > 2] %>% 
+      unlist %>% unname %>% unique %>% sort
+    three <- three.plus[!(three.plus %in% four)]
+    if(length(three) + length(four) > 0) overlapping_genes[[i]] <- data.frame(Name = c(three, four), 
+                                                                              count = c(rep("x3 species", length(three)), 
+                                                                                        rep("4 species", length(four))), 
+                                                                              nGenes = ngenes, stringsAsFactors = FALSE)
+    
+    count_intersects <- function(l1, l2) {
+      
+      intersections <- attr(venn(list(am=l1 %>% get_top(ngenes), 
+                                      bt=l2 %>% get_top(ngenes)), 
+                                 show.plot=FALSE), "intersections")
+      if(length(intersections) > 2) return(length(intersections[[3]]))
+      else return(0)
+      
+    }
+    
+    # permutation test
+    num_overlaps <- c(count_intersects(g1,g2), count_intersects(g1,g3), count_intersects(g1,g4),
+                      count_intersects(g2,g3), count_intersects(g2,g4), count_intersects(g3,g4))
+    
+    nBoots <- 10000
+    boot_results <- lapply(1:nBoots, function(x){
+      g1 <- g1[sample(nrow(g1), nrow(g1)), ]
+      g2 <- g2[sample(nrow(g2), nrow(g2)), ]
+      g3 <- g3[sample(nrow(g3), nrow(g3)), ]
+      g4 <- g4[sample(nrow(g4), nrow(g4)), ]
+      
+      c(count_intersects(g1,g2), count_intersects(g1,g3), count_intersects(g1,g4),
+        count_intersects(g2,g3), count_intersects(g2,g4), count_intersects(g3,g4))
+      
+    }) %>% do.call("rbind", .) 
+    
+    p <- 1:6
+    for(j in 1:6) p[j] <- sum(boot_results[,j] > num_overlaps[j]) / nBoots
+    
+    permutation_results[[i]] <- tibble(species_pair = c("am-bt", "am-lf", "am-ln", "bt-lf", "bt-ln", "lf-ln"),
+                                       top_n_genes = ngenes.list[i],
+                                       observed_overlaps = num_overlaps,
+                                       expected_overlaps = colMeans(boot_results),
+                                       `O/E` = observed_overlaps / expected_overlaps,
+                                       p = p,
+                                       x = ifelse(p < 0.05, "sig", " ")) %>% as.data.frame()
+  } # end of for()
+
+  permutation_results <- do.call("rbind", permutation_results)
+  names(permutation_results) <- c("Species pair", "Size of gene set", "Obs. overlaps", "Exp. overlaps", "O/E", "p-value", "")
+  
+  overlapping_genes <- do.call("rbind", overlapping_genes) %>%
+    arrange(count, nGenes, Name) %>%
+    distinct(paste(Name, count), .keep_all = TRUE) %>%
+    dplyr::select(Name, count, nGenes) %>%
+    mutate(count = replace(count, count == "x3 species", "3 species")) 
+  
+  names(overlapping_genes) <- c("Name", "Appears in", "Size of gene set")
+  list(overlapping_genes, permutation_results)
+}
+
+if(!("most.pheromone.sensitive.genes.rds" %in% list.files("data"))){
+  most.pheromone.sensitive.genes <- most.pheromone.sensitive.genes()
+  saveRDS(most.pheromone.sensitive.genes, "data/most.pheromone.sensitive.genes.rds")
+} else {
+  most.pheromone.sensitive.genes <- readRDS("data/most.pheromone.sensitive.genes.rds")
+}
+```
+
+**Table S`r numbering("supp.table.counter")`**: List of genes that appear in the top _n_-most pheromone-sensitive genes for 3 or 4 species. To generate the table, we ranked genes by the absolute value of their log fold change in response to queen pheromone, then listed the gene names that appeared in 3-4 species. For non-_Apis_ species, we found the gene names by comparison with the _Apis_ genome by BLAST. This exercise was performed with _n_ = 100, 200 ... 500, and the third column lists the smallest _n_ for which the gene in question appeared (for example, the gene _protein takeout-like_ appeared for all 4 species when inspecting the top 200+ genes). 
+```{r}
+saveRDS(most.pheromone.sensitive.genes[[1]], file = "supplement/tab_S8.rds")
+kable(most.pheromone.sensitive.genes[[1]], "html") %>%
+  kable_styling() %>%
+  scroll_box(height = "300px")
+```
+
+<br></br>
+**Table S`r numbering("supp.table.counter")`**: Results of a permutation test examining the number of overlaps in the top _n_-most pheromone-sensitive genes for each pair of species. To generate the table, we ranked genes by the absolute value of their log fold change in response to queen pheromone, then took the top _n_-most pheromone-sensitive genes for each species, and counted the observed and expected number of overlaps (the expected number was estimated by bootstrapping with 10^5 replicates). The O/E column gives the ratio of observed to expected, where numbers >1 indicate more overlap than expected. The one-tailed p-value was estimated as the proportion of bootstrap replicates showing more overlap than in the real dataset. This exercise was performed with _n_ = 100, 200 ... 500.
+```{r}
+saveRDS(most.pheromone.sensitive.genes[[2]], file = "supplement/tab_S9.rds")
+kable(most.pheromone.sensitive.genes[[2]], "html", digits=2) %>%
+  kable_styling() %>%
+  scroll_box(height = "300px")
+```
+
+
+
+## Pheromone-sensitive genes tend to be evolutionarily ancient {.tabset}
+We defined a gene as "evolutionarily ancient" if it has an ortholog in at least one species from the other lineage (for example, we define ancient _A. mellifera_ genes as those that have a reciprocal best BLAST hit in at least one of the _Lasius_ ant species). Genes that were not detected by BLAST in the other lineage were defined as putatively lineage-specific (though many of them are likely to be conserved genes that we failed to identify as such, hence the word "putative"). Using a non-parametric Mann-Whitney test, we show that the average pheromone sensitivity of ancient genes is significantly lower than that of non-ancient genes, for all 4 species (p < 0.0001). Note that we have probably misclassifed some genes as ancient or lineage-specific, which means that the result might be even stronger than suggested here.
+```{r}
+ancient.genes.test <- function(species){   
+  if(species == "am") ancient.genes <- c(make.OGGs(c("am", "lf"))[[2]]$am, 
+                                         make.OGGs(c("am", "ln"))[[2]]$am) %>% unique
+  if(species == "bt") ancient.genes <- c(make.OGGs(c("bt", "lf"))[[2]]$bt, 
+                                         make.OGGs(c("bt", "ln"))[[2]]$bt) %>% unique
+  if(species == "lf") ancient.genes <- c(make.OGGs(c("lf", "am"))[[2]]$lf, 
+                                         make.OGGs(c("lf", "bt"))[[2]]$lf) %>% unique
+  if(species == "ln") ancient.genes <- c(make.OGGs(c("ln", "am"))[[2]]$ln, 
+                                         make.OGGs(c("ln", "bt"))[[2]]$am) %>% unique
+  
+  dat <- tbl(my_db, paste("ebseq_gene_", species, sep="")) %>%
+    collect(n = Inf) %>%
+    mutate(Ancient = "No",
+           Ancient = replace(Ancient, gene %in% ancient.genes, "Yes"),
+           sensitivity = abs(log(PostFC))) %>%
+    select(Ancient, sensitivity) 
+  
+  ancient.genes <- dat$sensitivity[dat$Ancient == "Yes"]
+  
+  if(species %in% c("lf", "ln")) {
+    Putatively.ant.specific.genes <- dat$sensitivity[dat$Ancient == "No"]
+    print(wilcox.test(ancient.genes, Putatively.ant.specific.genes)) 
+  }
+  else {
+    Putatively.bee.specific.genes <- dat$sensitivity[dat$Ancient == "No"]
+    print(wilcox.test(ancient.genes, Putatively.bee.specific.genes)) 
+  }
+  
+  dat %>% 
+    group_by(Ancient) %>% 
+    summarise(Mean_pheromone_sensitivity = mean(sensitivity), SE = sd(sensitivity) / sqrt(length(sensitivity))) %>% pander()
+}
+```
+
+### _Apis mellifera_
+```{r}
+ancient.genes.test("am") 
+```
+
+### _Bombus terrestris_
+```{r}
+ancient.genes.test("bt") 
+```
+
+### _Lasius flavus_
+```{r}
+ancient.genes.test("lf")  
+```
+
+### _Lasius niger_
+```{r}
+ancient.genes.test("ln")  
+```
+
+
+
+## Correlations in pheromone-sensitive gene expression across species
+
+These tests ask if pairs of orthologous genes tend to show a similar level of pheromone sensitivity across species. These tests ask whether there is a cross-species correlation in absolute log fold change in response to pheromone treatment, as calculated using ebseq. The advantage of these tests is that one is not limited to focusing on the set of 'significant' genes (as with the Venn diagrams shown in Figure 1), which discards a lot of information becuase it uses an arbitrary p-value threshold, and puts all the genes into two bins (ignoring the quantitative differences in fold-change).
+
+#### Define function to retrieve fold-change expression data (calculated with ebseq) for genes that are each other's reciprocal best BLAST
+```{r fc.function}
+get.fc.for.pair.species <- function(species1, species2){
+  query <- 'SELECT rbb.X AS X_gene, rbb.Y AS Y_gene, ebseq_gene_X.PostFC AS X_fc, ebseq_gene_Y.PostFC AS Y_fc FROM ebseq_gene_X
+             JOIN
+  (SELECT Y2X.X, Y2X.Y  FROM Y2X
+  JOIN X2Y
+  ON Y2X.Y = X2Y.Y AND Y2X.X = X2Y.X  ) AS rbb
+  ON rbb.X = ebseq_gene_X.gene
+  JOIN ebseq_gene_Y
+  ON rbb.Y = ebseq_gene_Y.gene'
+  
+  query <- str_replace_all(query, "X", species1)
+  query <- str_replace_all(query, "Y", species2)
+  dbGetQuery(db, query)
+}
+```
+
+
+#### Make a table and some plots of the correlations for each pair of species
+**Table S`r numbering("supp.table.counter")`**: Results of Spearman's rank correlations, testing whether the absolute log fold difference between pheromones treatments is correlated for a given pair of species. Positive coefficients ($\rho$, written as rho) indicate that on average, orthologous genes have similar sensitivity to queen pheromones. The p-values have been corrected for multiple testing with the Benjamini-Hochberg method.
+```{r TableS1}
+species.combinations <- t(combn(c("am", "bt", "lf", "ln"), 2))
+rho <- numeric(nrow(species.combinations))
+p <- numeric(nrow(species.combinations))
+for(i in 1:nrow(species.combinations)){
+  fc.data <- get.fc.for.pair.species(species.combinations[i, 1], 
+                                     species.combinations[i, 2])
+  fc.data[,3:4] <- fc.data[,3:4] %>% log2 %>% abs # Log the fold changes - not that it matters for Spearman's!
+  results <- suppressWarnings(with(fc.data, cor.test(fc.data[,3], 
+                                                     fc.data[,4], method="spearman"))) # Spearman's correlation
+  rho[i] <- results$estimate
+  p[i] <- results$p.value
+}
+
+species.combinations <- data.frame(Species1 = species.combinations[,1],
+                                   Species2  = species.combinations[,2],
+                                   rho = rho,
+                                   p = p.adjust(p, method = "BH"), # adjust these p-vals for multiple testing
+                                   sig = " ", stringsAsFactors = F)
+
+species.combinations[species.combinations == "am"] <- "Apis mellifera"
+species.combinations[species.combinations == "bt"] <- "Bombus terrestris"
+species.combinations[species.combinations == "lf"] <- "Lasius flavus"
+species.combinations[species.combinations == "ln"] <- "Lasius niger"
+
+species.combinations$sig[species.combinations$p < 0.05] <- "*"
+species.combinations$sig[species.combinations$p < 0.01] <- "**"
+species.combinations$sig[species.combinations$p < 0.0001] <- "***"
+# Make a table
+saveRDS(species.combinations %>% mutate(rho = format(round(rho, 3), nsmall = 3)), file = "supplement/tab_S10.rds")
+species.combinations %>% mutate(rho = format(round(rho, 3), nsmall = 3)) %>% pander
+```
+
+```{r}
+# Make a heat map showing the correlations
+heat.map.figure <- species.combinations %>% ggplot(aes(Species1, Species2, fill=rho)) + 
+  geom_tile(colour="white", size = 4) + 
+  scale_fill_gradient2(name = "Corr", 
+                       low = brewer.pal(9, "RdYlBu")[7], 
+                       mid = "white", 
+                       high = brewer.pal(9, "RdYlBu")[2]) + 
+  geom_text(aes(label = paste(format(signif(rho, 2), nsmall = 2), sig)), size = 3.5) +
+  theme_bw() + theme(panel.grid = element_blank(), 
+                     panel.border = element_blank(), 
+                     axis.ticks = element_blank(), 
+                     axis.text = element_text(face = "italic"), 
+                     legend.position = "none") + 
+  xlab(NULL) + ylab(NULL) +
+  scale_x_discrete(labels = c("Apis\nmellifera", "Bombus\nterrestris", "Lasius\nflavus"), expand = c(0,0)) + 
+  scale_y_discrete(labels = c("Bombus\nterrestris", "Lasius\nflavus", "Lasius\nniger"), expand = c(0,0)) 
+heat.map.figure
+
+ggsave(heat.map.figure, file = "figures/Correlations heat map.pdf", height = 4, width=4.3)
+```
+
+
+```{r message=FALSE, warning=FALSE, fig.height=10, fig.width=6}
+# Make a scatterplot showing the correlations
+combos <- t(combn(c("am", "bt", "lf", "ln"), 2))
+scatter_plot_data <- list()
+
+for(i in 1:nrow(combos)){
+  fc.data <- get.fc.for.pair.species(combos[i, 1], 
+                                     combos[i, 2])
+  fc.data <- fc.data[,3:4] %>% log2 %>% abs # Log the fold changes
+  names(fc.data) <- c("x", "y")
+  scatter_plot_data[[i]] <- data.frame(fc.data, sp1 = species.combinations[i, 1], sp2 = species.combinations[i, 2])
+}
+
+fig_S3 <- scatter_plot_data %>% 
+  do.call("rbind", .) %>% 
+  ggplot(aes(x, y)) + 
+  geom_point(alpha = 0.15) +
+  stat_smooth(method = "lm", colour = "tomato") +
+  facet_wrap(~paste(sp1, sp2, sep = " v "), scales = "free", ncol = 2) + 
+  labs(x = "Pheromone sensitivity of ortholog in species 1",
+       y = "Pheromone sensitivity of ortholog in species 2") + 
+  theme_minimal()
+
+saveRDS(fig_S3, file = "supplement/fig_S3.rds")
+fig_S3
+```
+<br/><br/>
+**Figure S`r numbering("supp.figure.counter")`**: Each scatterplot shows the correlation in pheromone sensitivity across pairs of orthologous genes, for each of the six possible species pairs. Species 1 refers to the first-listed species, such that in the top-left panel, _Apis mellifera_ is plotted on the x-axis and _Bombus terrestris_ is on the y-axis. The regression lines are from a simple linear regression, and the grey zone around the line shows its 95% confidence intervals. 
+
+
+
+## Identifying genes that splice differently following queen pheromone treatment
+
+Many genes showed alternative splicing in all four species, with the great majority showing between 1 and 6 isoforms.
+
+```{r}
+fig_S4 <- rbind(my_db %>% tbl("isoforms_am") %>% collect %>% .$gene %>%
+        table %>% melt %>% dplyr::select(value) %>% mutate(sp = "Apis mellifera"),
+      my_db %>% tbl("isoforms_bt") %>% collect %>% .$gene %>%
+        table %>% melt %>% dplyr::select(value) %>% mutate(sp = "Bombus terrestris"),
+      my_db %>% tbl("isoforms_lf") %>% collect %>% .$gene %>%
+        table %>% melt %>% dplyr::select(value) %>% mutate(sp = "Lasius niger"),
+      my_db %>% tbl("isoforms_ln") %>% collect %>% .$gene %>%
+        table %>% melt %>% dplyr::select(value) %>% mutate(sp = "Lasius flavus")) %>%
+  as.data.frame() %>%
+  ggplot(aes(x = value, y = sp, fill = sp)) +
+  geom_joy(stat = "binline", binwidth=1) +
+  coord_cartesian(xlim=c(1,12)) +
+  scale_fill_cyclical(values = c("#4040B0", "#9090F0")) +
+  scale_x_continuous(breaks = seq(1,12,by=1)) +
+  scale_y_discrete(expand = c(0.01, 0)) +
+  theme_joy() +
+  xlab("Number of isoforms") + ylab(NULL) +
+  theme(axis.text = element_text(face = "italic"))
+
+saveRDS(fig_S4, file = "supplement/fig_S4.rds")
+fig_S4
+```
+ <br/><br/>
+**Figure S`r numbering("supp.figure.counter")`**: Distribution of isoform numbers per gene for each of the four species.
+
+```{r splice.function}
+# Define a function to search for significantly alternatively spliced genes. We define these as genes that have at least two differentially expressed isoforms, where queen pheromone stimulates expresison of one isoform but surpresses expression of another
+find.alternatively.spliced.genes <- function(species){
+
+  # Write a database query with 'X' as a placeholder for the species name
+  # We want to find genes in which at least two isoforms are differentially expressed in response to pheromones
+  # Significant isoforms are listed in the ebseq_padj_isoform_X tables, so we count them and get the names of their genes
+  query <- 'SELECT isoforms_X.gene, isoforms_X.isoform, PostFC FROM isoforms_X
+JOIN
+             (SELECT gene, COUNT(*) FROM ebseq_padj_isoform_X
+             JOIN isoforms_X
+             ON isoforms_X.isoform = ebseq_padj_isoform_X.isoform
+             GROUP BY gene
+             HAVING COUNT(*)>1 ) AS multiISO
+             ON multiIso.gene = isoforms_X.gene
+             JOIN ebseq_padj_isoform_X
+             ON ebseq_padj_isoform_X.isoform = isoforms_X.isoform
+             ORDER BY isoforms_X.gene'
+  query <- str_replace_all(query, "X", species) # replace X with the species
+  Splice <- dbGetQuery(db, query) # run the query
+
+  # Find the highest and lowest fold change for the isoforms of each gene
+  SpliceMin <- aggregate(Splice$PostFC, by=list(Splice$gene), FUN="min")
+  SpliceMax <- aggregate(Splice$PostFC, by=list(Splice$gene), FUN="max")
+  SpliceCompare <- merge(SpliceMin, SpliceMax, by = "Group.1")
+  colnames(SpliceCompare) <- c("gene", "min", "max")
+
+  # Define diff-spliced genes as those with both elevated and
+  # repressed isoforms, when comparing control and pheromone-treated workers
+  output <- data.frame(gene = SpliceCompare$gene[SpliceCompare$min < 1 & SpliceCompare$max > 1], stringsAsFactors = F)
+
+  # Add the Apis mellifera ortholog, from one-way BLAST, if it's a non-Apis species
+  if(species != "am"){
+    orthologs <- tbl(my_db, paste(species, "2am", sep = "")) %>% select(-evalue) %>% collect(n=Inf) %>% as.data.frame()
+    names(orthologs) <- c("gene", "Amel_ortholog")
+    output <- left_join(output, orthologs, by = "gene")
+    output <- left_join(output, tbl(my_db, "bee_names") %>%
+                          rename(Amel_ortholog = gene), copy=T, by = "Amel_ortholog")
+  }
+  else output <- left_join(output, tbl(my_db, "bee_names"), by = "gene", copy = T)
+
+  output[is.na(output)] <- " "
+
+  # Remove the 'isoform X' part from the gene name, so it gives the name of the gene not the isoform
+  output$name <- unlist(lapply(strsplit(output$name, split = " isoform "), function(x) x[1]))
+
+  output <- left_join(output, SpliceCompare, by = "gene")
+
+  output$min <- log2(output$min) # Log2 transform the fold changes
+  output$max <- log2(output$max)
+  output <- output %>% arrange(-(abs(min) + max)) # Arrange by effect size
+
+  if(species == "am" | species == "bt") names(output) <- c("Gene", "Name", "Lowest FC", "Highest FC")
+  else names(output) <- c("Gene", "Amel ortholog", "Name", "Lowest FC", "Highest FC")
+  output
+}
+```
+
+### Genes showing significant pheromone-induced alternative splicing {.tabset}
+There were no genes showing significant pheromone-sensitive splicing for _B. terrestris_, hence this section contains only three tabs.
+
+#### _A. mellifera_
+**Table S`r numbering("supp.table.counter")`**: List of genes showing statistically significant pheromone-induced alternative splicing in _A. mellifera_. These genes were defined as those that have at least two isoforms that are differentially expressed following pheromone treatment (EBseq; posterior probability of differential expression p < 0.05), and for which one isoform increases in expression while another decreases. The last two columns show the fold changes of the most down-regulated and most up-regulated isoforms, on a Log$_2$ scale.
+```{r am.splice}
+am.alt.splice <- find.alternatively.spliced.genes("am")
+saveRDS(am.alt.splice, file = "supplement/tab_S11.rds")
+kable.table(am.alt.splice)
+```
+
+#### _L. flavus_
+**Table S`r numbering("supp.table.counter")`**: List of genes showing statistically significant pheromone-induced alternative splicing in _Lasius flavus_. These genes were defined as those that have at least two isoforms that are differentially expressed following pheromone treatment (EBseq; posterior probability of differential expression p < 0.05), and for which one isoform increases in expression while another decreases. The last two columns show the fold changes of the most down-regulated and most up-regulated isoforms, on a Log$_2$ scale.
+```{r lf.splice}
+lf.alt.splice<- find.alternatively.spliced.genes("lf")
+saveRDS(lf.alt.splice, file = "supplement/tab_S12.rds")
+kable.table(lf.alt.splice)
+```
+
+#### _L. niger_
+**Table S`r numbering("supp.table.counter")`**: List of genes showing statistically significant pheromone-induced alternative splicing in _Lasius flavus_. These genes were defined as those that have at least two isoforms that are differentially expressed following pheromone treatment (EBseq; posterior probability of differential expression p < 0.05), and for which one isoform increases in expression while another decreases. The last two columns show the fold changes of the most down-regulated and most up-regulated isoforms, on a Log$_2$ scale.
+```{r ln.splice}
+ln.alt.splice <- find.alternatively.spliced.genes("ln")
+saveRDS(ln.alt.splice, file = "supplement/tab_S13.rds")
+kable.table(ln.alt.splice)
+```
+
+
+### Overlap of specific pheromone-sensitive alternatively-spliced genes
+```{r splice.venn}
+lf.alt <- lf.alt.splice$Name[lf.alt.splice$Name != " "] # Exclude genes with no A. mellifera names
+ln.alt <- ln.alt.splice$Name[ln.alt.splice$Name != " "]
+venn(list(Apis = am.alt.splice$Name,`L. flavus` = lf.alt,`L. niger` = ln.alt))
+```
+
+
+
+
+## Gene co-expression network analysis
+
+First, we define a series of functions for gene co-expression network analysis.
+```{r network.functions}
+# This function uses the ComBat function from the package 'sva' to remove variance in gene expression
+# that is due to colony and species, allowing us to detect variance due to queen pheromone treatment.
+# The use of ComBat in this fashion follows recommendations from the author of the WGCNA package. 
+remove.effects.combat <- function(expression.data){
+  sampleIDs <- rownames(expression.data)
+  ids <- with(treatments[match(sampleIDs, treatments$id), ], 
+              data.frame(
+                id = sampleIDs,
+                species = species,
+                treatment = treatment,
+                colony = paste(species, colony, sep = "")))
+  
+  modcombat <- model.matrix(~as.factor(treatment), data=ids)
+  shh <- capture.output(expression.data <- ComBat(dat = t(expression.data), 
+                                                  batch = ids$species, 
+                                                  mod = modcombat, 
+                                                  par.prior = TRUE))
+  shh <- capture.output(expression.data <- t(ComBat(dat = expression.data, 
+                                                    batch = ids$colony, 
+                                                    mod = modcombat, 
+                                                    par.prior = TRUE)))
+  list(expression.data, ids)
+}
+
+
+# Build a gene coexpresison network using WGCNA package
+build.network <- function(expression.data.list){
+  # Pick the soft thresholding power that gives a model fit of R^2 > 0.8 for the scale-free topology model
+  soft.power <- pickSoftThreshold(expression.data.list[[1]], 
+                                  RsquaredCut = 0.8, verbose = 0, powerVector = 1:30)
+  # Use this power to generate a gene co-expression network, using the default settings
+  network <- blockwiseModules(expression.data.list[[1]], 
+                              power = soft.power$powerEstimate,
+                              networkType = "signed",
+                              minModuleSize = 30,
+                              verbose = 0,
+                              saveTOMs = T)
+  list(network, expression.data.list[[2]])
+}
+
+
+# By default, WGCNA gives the transcriptional modules random names like 'turqoise' or 'darkred'. 
+# I think it's more helpful to define the biggest module as 'Module 1', the second biggest as 'Module 2', etc
+# I use the label 'Module 0' for genes that were not assigned to a module
+convert.module.colors.to.names <- function(network){
+  module.sizes <- table(network[[1]]$colors) %>% sort %>% rev
+  module.sizes <- c(module.sizes[names(module.sizes) == "grey"], 
+                    module.sizes[names(module.sizes) != "grey"])
+  module.mappings <- data.frame(color = names(module.sizes), 
+                                new.name = paste("Module", 
+                                                 0:(length(module.sizes)-1)), stringsAsFactors = F)
+  network[[1]]$colors <- module.mappings$new.name[match(network[[1]]$colors, module.mappings$color)]
+  names(network[[1]]$MEs) <- gsub("ME", "", names(network[[1]]$MEs))
+  names(network[[1]]$MEs) <- module.mappings$new.name[match(names(network[[1]]$MEs), 
+                                                            module.mappings$color)]
+  network
+}
+
+
+# Rearrange the data in a handy format for stats and plotting, and remove the 'Module 0', the un-assigned genes
+rearrange.eigengene.data <- function(network.list){
+  cbind(network.list[[2]], network.list[[1]]$MEs) %>% 
+    gather(Module, Eigengene, starts_with("Module")) %>% 
+    filter(Module != "Module 0") %>%
+    rename(Species = species, Treatment = treatment) %>% 
+    arrange(Species, Treatment, colony, Module)
+} 
+```
+
+### Make the gene co-expression network, using the set of orthologous genes for all 4 species
+```{r make.network, results='hide', warning=FALSE, message=FALSE}
+# The 4 bad samples get removed, then we find the orthologous genes, the data are scaled with ComBat, and then we build the network using the lowest soft-thresholding power that gives at least R^2 > 0.8 model fit
+OGGs <- make.OGGs(c("am", "bt", "ln", "lf"), bad.samples = bad.samples)
+network <- OGGs[[1]] %>%
+  remove.effects.combat() %>% 
+  build.network() %>%
+  convert.module.colors.to.names()
+eigen.data <- network %>% rearrange.eigengene.data
+```
+
+### Simple statistics about the network
+Here is the number of orthologous genes that form the network:
+```{r}
+length(network[[1]]$colors)
+```
+
+Here is the number and size of modules in the network - module 0 refers to the unassigned genes.
+```{r}
+table(network[[1]]$colors) %>% pander
+```
+
+
+### Make a plot of the module eigengenes
+```{r fig.width = 9, fig.height = 8}
+# Make a plot of the module eigengenes, split by species, module and treatment
+treatments.network.plot <- function(dat){ 
+  dat %>% mutate(Treatment = replace(as.character(Treatment), Treatment == "QP", "Queen\npheromone")) %>%
+    ggplot(aes(Species, Eigengene, fill = Treatment)) + 
+    geom_hline(yintercept = 0, linetype=2) + 
+    geom_boxplot() + 
+    facet_wrap(~Module) + 
+    xlab(NULL) + 
+    scale_x_discrete(labels = c("Apis\nmellifera", "Bombus\nterrestris", "Lasius\nflavus", "Lasius\nniger")) +
+    scale_fill_brewer(name = " ", palette = "Set3", direction = -1) + 
+    theme_bw() + 
+    theme(strip.background = element_blank(), 
+          axis.text.x = element_text(face = "italic"), 
+          panel.border = element_rect(size=0.7), 
+          legend.position = "top") 
+}
+
+eigen.data %>% treatments.network.plot()
+ggsave(eigen.data %>% treatments.network.plot(), 
+       file = "figures/Figure 3 - Module eigengenes.pdf", height = 6.6, width = 8)
+```
+ <br/><br/> 
+ **Figure 3**: The figure shows the distribution of module eigengenes for each combination of module, species, and queen pheromone (QP) treatment. Positive values mean that the focal group has higher eigengenes, which derived from the relative expression levels of a module of genes, than the average. 
+
+
+
+### Run multivariate Bayesian model testing for treatment and species effects on eigengenes
+Since the computation time is long, the model was defined and run in a separate R script, `Script to run multivariate brms model.R`. It is a multivariate model with 9 response variables: the eigengenes of the nine modules. We fit colony origin as a random effect in all models, accounting for similarity in gene expression between workers from the same colony. As shown in Table S14, we ran five models of this form, with different fixed effects (i.e. models with and without the predictors _Species_, _Treatment_, and their interaction). We then calculated the posterior model probabilities for these five models using bridge sampling (which is conceptually similar to pickoing the best-fitting model by AIC). These probabilities give the chance that each model is the best-fitting one in the set being considered, given the data and the priors. The table shows that a model containing the treatment effect, but not the species effect, is the best fitting (posterior probability > 0.99), and so we conclude that pheromone treatment affects gene expression, but we have no evidence for inter-species differences, or a treatment-by-species interaction.
+
+**Table S`r numbering("supp.table.counter")`**: The posterior model probabilities of five competing multivariate Bayesian models of the module eigengene dataset. The best-fitting model (with posterior probability of almost 1) contains the treatment effect only (not the species effect, or the treatment-by-species interaction).
+```{r}
+readRDS("data/brms_model_comparisons.rds") %>% pander()
+```
+
+**Table S`r numbering("supp.table.counter")`**: Full summary of the best-fitting multivariate Bayesian model of the eigengene data for all nine modules, implemented in the programming language `Stan` via the R package `brms`. The most salient part of the output is the population-level effects (often called fixed effects), which give the coefficients for the intercept and the effect of queen pheromone treatment on the eigengenes for each module. The 9 response variables were all scaled to have mean 0 and variance 1 before running the model, meaning that the estimates can be interpreted as Cohen's $d$ effect size. The remaining sections describe the (co)variance associated with colony (which appears to be low), and the covariance in the residuals (which illustrates how eigengenes are correlated across modules).
+```{r}
+cat(paste(readLines("data/brms_model.txt"), "\n", sep = ""))
+```
+
+### Plot the correlations between all modules and the pheromone treatment
+```{r, fig.width = 6, fig.height=6, results='hide'}
+meta.module.plot <- function(network){
+ 
+  MET <- network[[1]]$MEs 
+  MET <- data.frame(QP = (network[[2]]$treatment %>% as.numeric())-1, MET) %>% dplyr::select(-Module.0)
+  names(MET) <- gsub("[.]", " ", names(MET))
+  cluster <- (1 - cor(MET)) %>% as.dist() %>% hclust()
+  ordering <- cluster$labels[cluster$order]
+  heat.map.data <- cor(MET) %>% melt %>% 
+    mutate(Var1 = factor(Var1, levels = ordering),
+           Var2 = factor(Var2, levels = ordering)) %>% 
+    rename(Corr = value)
+  heat.map <- heat.map.data %>% ggplot(aes(Var1, Var2, fill = Corr)) + geom_tile() + 
+    scale_fill_gradient2(low = brewer.pal(9, "RdBu")[8], 
+                         mid = "white", 
+                         high = brewer.pal(9, "RdBu")[2]) + 
+    xlab(NULL) + ylab(NULL) + 
+    theme_bw() + 
+    theme(panel.border = element_blank(), 
+          panel.grid = element_blank()) + 
+    scale_x_discrete(expand = c(0,0)) + 
+    scale_y_discrete(expand = c(0,0))
+ 
+  dendrogram <- ggdendrogram(cluster) + theme(axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  p1 <- grid.arrange(dendrogram, heat.map)
+  invisible(p1)
+}
+
+meta.module.plot(network)
+```
+ <br/><br/> 
+Dendrogram and heat map showing the correlations among module eigengene values and the queen pheromone treatment (QP; coded as zero and 1 for the control and treatment respectively). Modules with red colour, or which are close on the dendrogram, show more correlated expression. The queen pheromone treatment was correlated with Module 5, but was relatively uncorrelated with the other modules.
+
+
+**Table S`r numbering("supp.table.counter")`**: Results of Spearman's rank correlations testing for a relationship between the effect of queen pheromone on gene expression, and the connectedness of the gene. Negative values of Spearman's Rho mean that highly pheromone-sensitive genes tend to have lower connectedness.
+```{r connectedness, warnings = FALSE} 
+load("blockwiseTOM-block.1.RData") # Load the TOM from the network analysis - can be used to find connectedness for each ortholog
+
+# Get the phermonone sensitivity value for each of the OGGs, and line it up with the connectedness data
+suppressMessages(dd <- OGGs[[2]] %>% left_join(tbl(my_db, "ebseq_gene_am") %>% select(gene, PostFC) %>% rename(am=gene), copy=T) %>% rename(am_FC = PostFC) %>%
+  left_join(tbl(my_db, "ebseq_gene_bt") %>% select(gene, PostFC) %>% 
+              rename(bt=gene), copy=T) %>% rename(bt_FC = PostFC) %>%
+  left_join(tbl(my_db, "ebseq_gene_lf") %>% select(gene, PostFC) %>% 
+              rename(lf=gene), copy=T) %>% rename(lf_FC = PostFC) %>%
+  left_join(tbl(my_db, "ebseq_gene_ln") %>% select(gene, PostFC) %>% 
+              rename(ln=gene), copy=T) %>% rename(ln_FC = PostFC) %>%
+  mutate(k = colSums(as.matrix(TOM))))
+
+do.spearman <- function(dd, species, name){ # run spearman on each species
+  test <- cor.test(dd$k, dd[, names(dd) == species] %>% log2 %>% abs, method = "spearman")  # Note that we convert the fold-change in expression with abs(log2(x)), to get pheromone sensitivity
+  with(test, data.frame(Species = name, rho = estimate, p = p.value, row.names = NULL))
+}
+
+suppressWarnings(results <- rbind(do.spearman(dd, "am_FC", "Apis mellifera"),
+                                  do.spearman(dd, "bt_FC", "Bombus terrestris"),
+                                  do.spearman(dd, "lf_FC", "Lasius flavus"),
+                                  do.spearman(dd, "ln_FC", "Lasius niger")))
+rownames(results) <- NULL
+saveRDS(results, file = "supplement/tab_S16.rds")
+pander(results)
+```
+
+
+## Characteristics of pheromone-sensitive genes in _Apis_
+In this section, we search for correlates of the absolute Log_2 fold change in response to pheromone (where positive values denote genes whose expression differs strongly between the control and pheromone treatment). This section makes use of data kindly passed to us by Soojin Yi and Brendan Hunt.
+
+1. The data on queen and worker-specific gene expression come from Grozinger et al. 2007. We found that pheromone-sensitive genes tend to be over-expressed by queens relative to sterile workers. However, genes that are over-expressed by fertile workers relative to sterile workers did not tend to be more (or less) pheromone-sensitive. 
+
+2. The methylation level (i.e. % methylated cytosines) data come from Galbraith et al. 2016 (provided by Soojin Yi). We found a negative correlation between methylation and pheromone-sensitivity, suggesting that pheromone-sensitive genes are hypomethylated. 
+
+3. The CpG O/E values were calculated by Yi and colleagues for the latest _A. mellifera_ genome annotation (as of late 2017). We found a positive correlation between CpG O/E and pheromone-sensitivity. High CpG is associated with lower rate of DNA methylation, again suggesting that pheromone-sensitive genes are hypomethylated. 
+
+4. The columns on the H3K4me3, H3K27ac, and H3K36me3 histon modifications were calculated from the raw data from Wojciechowski et al. 2018, using the code in the separate R script `wojciechowski_histone_analysis.R`.
+
+5. The estimates of $\gamma$, a measure of positive and negative selection similar to dN/dS, come from Harpur et al. 2014 PNAS. There was a significant positive correlation between $\gamma$ and sensitivity to queen pheromone, suggesting that highly pheromone-sensitive genes tend to be positively selected.
+
+6. The codon adaptation index was provided by Brendan Hunt. A high codon adaptation index denotes high codon usage bias, meaning that certain synonymous codons are more common than others. Pheromone-sensitive genes showed low codon usage bias.
+
+7. Lastly, 'expression level' refers to the average expression of each gene, expressed as TPM (transcripts per million) as measured by the software RSEM in the present study. Highly expressed genes tended to be less pheromone-sensitive.
+
+```{r fig.height=9, fig.width=9}
+# import and clean up the data provided by Brendan Hunt
+hunt.data <- read.delim("data/apis_gene_comparisons/Amel_AllData_012709.txt", 
+                        header=T, stringsAsFactors = FALSE) %>% 
+  mutate(log2RW.SW = log2(RW_bagel / SW_bagel))        # calculate log fold difference in gene expression between fertile and sterile workers
+entrez.tbl <- read.delim("data/apis_gene_comparisons/am.gene_info.txt", stringsAsFactors = FALSE)[,c(2,5,6)] # import table of gene names (Entrez, old Beebase, and new Beebase)
+names(entrez.tbl) <- c("entrez.id", "beebase1", "beebase2")
+entrez.tbl <- entrez.tbl %>% mutate(beebase2 = gsub("BEEBASE:", "", beebase2))
+entrez.tbl$beebase2[entrez.tbl$beebase2 == "-"] <- entrez.tbl$beebase1[entrez.tbl$beebase2 == "-"]
+entrez.tbl$beebase2[grep("\\|", entrez.tbl$beebase2)] <- unname(unlist(sapply(entrez.tbl$beebase2[grep("\\|", entrez.tbl$beebase2)], function(x){
+  namess <- strsplit(x, split = "\\|")[[1]]
+  hits <-str_detect(namess, "GB")
+  if(sum(hits) == 0) return(NA)
+  return(namess[hits])
+})))
+
+hunt.data <- hunt.data %>% 
+  dplyr::select(ID, log2Q.SW, log2RW.SW, CAI, cpgOE) %>% # get gene ID and the relevant data
+  rename(beebase1 = ID) %>%                              # merge based on beebase IDs
+  left_join(entrez.tbl, by = "beebase1") %>% 
+  filter(!is.na(beebase2) & beebase2 != "-") %>% 
+  rename(gene = beebase2) %>% 
+  dplyr::select(gene, log2Q.SW, log2RW.SW, CAI, cpgOE)
+hunt.data <- left_join(tbl(my_db, "ebseq_gene_am") %>%       # merge Hunt's data with our phermone sensitivity data
+                         dplyr::select(gene, PostFC) %>% collect(), hunt.data, by = "gene") %>% 
+  left_join(tbl(my_db, "bee_names") %>% collect, by = "gene")  # also add the gene names 
+
+# Import methylation data provided by Soojin Yi and Xin Wu (teh data are from Galbraith et al PNAS)
+methylation <- read.csv("data/apis_gene_comparisons/apis_gene_methyl_CG_OE.csv", stringsAsFactors = FALSE)
+methylation <- tbl(my_db, "ebseq_gene_am") %>% collect %>% left_join(methylation, by = "gene") %>%
+  filter(!is.na(Gene_body_methylation)) %>%
+  left_join(tbl(my_db, "bee_names") %>% collect(), by = "gene") %>% distinct(gene, .keep_all = T)
+
+# Import gamma data from Harpur et al 2014 PNAS
+gamma_am <- tbl(my_db, "ebseq_gene_am") %>% collect() %>%
+  left_join(read.table("data/apis_gene_comparisons/harpur_etal_gamma.txt", header=TRUE, stringsAsFactors=FALSE) %>% rename(gene = Gene), by = "gene") %>%
+  filter(!is.na(gamma)) %>%
+  dplyr::select(gene, PostFC, gamma) %>%
+  mutate(PostFC = log2(PostFC)) %>% left_join(tbl(my_db, "bee_names"), copy=TRUE, by = "gene") %>%
+  arrange(-abs(PostFC))
+
+
+merged <- hunt.data %>% dplyr::select(gene, PostFC, log2Q.SW, log2RW.SW, CAI) %>% 
+  left_join(methylation %>% dplyr::select(gene, CG_OE, Gene_body_methylation), by = "gene") %>% # merge in methylation data provided by Soojin Yi
+  left_join(gamma_am %>% dplyr::select(gene, gamma), by = "gene") %>%                         # merge in gamma data from Harpur et al
+  left_join(data.frame(gene = tbl(my_db, "rsem_am") %>% 
+                         dplyr::select(gene) %>% collect(),  # calculate overall expression level from our own data
+                       expression.level = (tbl(my_db, "rsem_am") %>% 
+                                             dplyr::select(-gene) %>% 
+                                             collect %>% rowSums())), by = "gene") %>% 
+  left_join(dd %>% dplyr::select(am, k) %>% rename(gene=am), by = "gene") %>%
+  mutate(CG_OE = -log2(CG_OE),                         # log2 CpG O/E ratio - change the sign, so that high values mean high methylation
+         expression.level = log10(expression.level),   # log10 the expression level
+         PostFC = abs(log2(PostFC))) %>%               # absolute log2 fold-change in response to pheromones (i.e. 'pheromone sensitivity' score)
+  as.data.frame() #%>%
+  # dplyr::select(-gene) 
+
+# Add the data from Wojciechowski et al. 2018 Genome Biology
+# There is gene-level data on the caste difference in 3 different histone modifications (from ChIP-seq),
+# These data were created from Wojciechowski et al.'s raw data, as described in the separate R script wojciechowski_histone_analysis.R
+merged <- merged %>% 
+  left_join(tbl(my_db, "H3K4me3") %>% collect() %>% mutate(H3K4me3_caste = caste_difference) %>% select(gene, H3K4me3_caste), by = "gene") %>%
+  left_join(tbl(my_db, "H3K27ac") %>% collect() %>% mutate(H3K27ac_caste = caste_difference) %>% select(gene, H3K27ac_caste), by = "gene") %>%
+  left_join(tbl(my_db, "H3K36me3") %>% collect() %>% mutate(H3K36me3_caste = caste_difference) %>% select(gene, H3K36me3_caste), by = "gene") %>%
+  dplyr::select(-gene) 
+  
+
+m.rename <- function(merged, col, new) {names(merged)[names(merged) == col] <- new; merged}
+merged <- merged %>% m.rename("PostFC", "Pheromone sensitivity\n(absolute log fold)")   # re-label all the variables nicely
+merged <- merged %>% m.rename("log2Q.SW", "Upregulation in adult queens\nover sterile workers (log fold)")
+merged <- merged %>% m.rename("log2RW.SW", "Upregulation in fertile workers\nover sterile workers (log fold)")
+merged <- merged %>% m.rename("CAI", "Codon usage bias\n(CAI)")
+merged <- merged %>% m.rename("CG_OE", "DNA methylation frequency\n(CpG depletion)")
+merged <- merged %>% m.rename("Gene_body_methylation", "DNA methylation frequency\n(BiS-seq)")
+merged <- merged %>% m.rename("gamma", "Positive selection\n(Gamma)")
+merged <- merged %>% m.rename("expression.level", "Log Expression level")
+merged <- merged %>% m.rename("k", "Connectivity in the\ntranscriptome")
+merged <- merged %>% m.rename("H3K4me3_caste", "Caste difference in\nH3K4me3 modification")
+merged <- merged %>% m.rename("H3K27ac_caste", "Caste difference in\nH3K27ac modification")
+merged <- merged %>% m.rename("H3K36me3_caste", "Caste difference in\nH3K36me3 modification")
+
+entrez.tbl <- entrez.tbl %>% rename(gene = beebase2) %>% select(gene, entrez.id)
+
+# function to reorder a correlation matrix using hierarchical clustering
+reorder_cormat <- function(cormat){ 
+  dd <- as.dist((1-cormat)/2)
+  hc <- hclust(dd)
+  cormat[hc$order, hc$order]}
+
+cormat <- reorder_cormat(cor(merged, use = 'pairwise.complete.obs', method = "spearman"))
+cormat[upper.tri(cormat)] <- NA
+diag(cormat) <- NA
+
+cor.matrix <-  (melt(cormat) %>% filter(!is.na(value)))[,1:2] %>% mutate(cor=0,p=0) 
+for(i in 1:nrow(cor.matrix)) cor.matrix[i, 3:4] <- cor.test(merged[, names(merged) == cor.matrix$Var1[i]], merged[, names(merged) == cor.matrix$Var2[i]])[c(4,3)] %>% unlist
+cor.matrix$p <- p.adjust(cor.matrix$p, method = "BH") # apply B-H p value correction
+cor.matrix$sig <- ""
+cor.matrix$sig[cor.matrix$p < 0.05] <- "*"   
+cor.matrix$sig[cor.matrix$p < 0.001] <- "**"  
+cor.matrix$sig[cor.matrix$p < 0.0001] <- "***"   
+cor.matrix$label <- paste(format(round(cor.matrix$cor,2), nSmall =2), cor.matrix$sig, sep = "")
+correlation.plot <- cor.matrix %>% 
+  ggplot(aes(Var1, Var2, fill=cor)) + 
+  geom_tile(colour = "grey10", size = 0.4, linetype = 3) + 
+  scale_fill_distiller(palette = "RdYlBu") + 
+  geom_text(aes(label = label), colour = "grey25", size = 3.5) + 
+  xlab(NULL) + ylab(NULL) +
+  scale_x_discrete(expand=c(0.01,0.01)) + scale_y_discrete(expand = c(0.01, 0.01)) + 
+  theme_minimal() + theme(axis.text.x = element_text(angle = 45, hjust = 1, 
+                                                     face = c("plain", "bold", rep("plain", 5), "bold",  rep("plain", 4))), 
+                          axis.text.y = element_text(face = c("bold", "plain", "bold", rep("plain", 5), "bold",  "plain", "plain")), 
+                          panel.grid = element_blank(), 
+                          legend.position = "none") 
+ggsave(correlation.plot, file = "figures/Figure 5 - correlations.pdf", width = 8, height = 8)
+correlation.plot
+```
+ <br/><br/> 
+**Figure 5**: Spearman correlations for various gene-level measurements from the present study and earlier research, for _Apis mellifera_ (measurements from the present study are shown in bold). 'Pheromone sensitivity' was calculated as the absolute value of the Log$_2$ fold difference in expression between pheromone treatment and the control. Expression level shows the logarithm of the average across our 6 _Apis_ libraries. For the 'Upregulation in queens/fertile workers' data (Grozinger et al. 2007), positive values denote genes that have higher expression in queens or fertile workers, relative to sterile workers. For the three histone modification variables (Wojciechowski et al. 2018), high values indicate that the modification is more abundant in queen-destined larvae, and low values indicate it is more abundant in worker-destined larvae. The two DNA methylation variables give two different measures of the amount of gene body DNA methylation, namely an indirect measure (-log CpG O/E ratio) and a direct measure (BiS-seq, Galbraith et al. 2016). Codon usage bias was estimated using the codon adaptation index: high values indicate bias for particular synonymous codons. Lastly, the parameter gamma ($\gamma$) describes the form of selection, where positive values denote positive selection, and negative values purifying selection (data from Hunt et al. 2014). 
+
+
+## Contrasting our _Lasius_ data with results from Morandin _et al._ 2016
+
+Morandin _et al._ 2016 (_Genome Biology_ 17:43) studied whole transcriptomes from queens and workers in 16 diverse ant species, including two other species from the genus _Lasius_. Using BLAST, they grouped genes into OGGs (orthologous gene groups), and built a co-expression network using all the OGGs that were common to all 16 species via the software WGCNA (much like the present study). Their analysis yielded 36 modules, of which many showed significant queen-worker differences in their module eigengenes. Here, we want to test whether these queen- and worker-like modules significantly overlap with the pheromone-sensitive modules in the present study.
+
+To do this, we used BLAST to identify orthologous gens in _L. niger_ and _L. flavus_ that belong to one of Morandin et al.'s OGGs. We then tested for significantly-greater-than-random overlap between Morandin et al's modules, and our own study's modules, using hypergeometric tests. 
+
+Of all the possible module pairs, we found 6 pairs that overlapped significantly more than expected (FDR-corrected). One of these pairs included our highly pheromone-sensitive module, Module 4, which overlapped with the caste-biased Module 13 from Morandin et al. The intersecting genes include _protein take-out like_, a NAD kinase 2, a serine protease, and _histone H2A-like_.
+
+
+```{r morandin, warning=FALSE, message=FALSE, results = 'hide'}
+morandin.orthology <- read.csv("data/morandin_comparison_data/Morandin to Holman orthology.csv", stringsAsFactors = FALSE)
+morandin.module.membership <- read.csv("data/morandin_comparison_data/Morandin module membership.csv", stringsAsFactors = FALSE)
+morandin.module.caste.bias <- read.csv("data/morandin_comparison_data/Morandin module caste bias.csv", stringsAsFactors = FALSE)
+# Create list of all the L. niger & L. flavus genes are are part of
+# the Orthologous Gene Groups (OGGs) from Morandin et al.
+# Here are the 3634 genes for which we have 1-to-1 orthologs in all 18 species:
+morandin.oggs <- make.OGGs(c("ln", "lf"))[[2]] %>% 
+  left_join(morandin.orthology, by = "ln") %>%
+  filter(!is.na(morandin.ogg)) %>% 
+  left_join(morandin.module.membership, by = "morandin.ogg") %>%
+  left_join(tbl(my_db, "ln2am") %>% 
+              left_join(tbl(my_db, "bee_names"), by = c("am" = "gene")) %>%
+              filter(!is.na(name)) %>% select(ln, name, am) %>% 
+              rename(apis.name = name) %>% collect(n=Inf), by = "ln") %>%
+  left_join(morandin.module.caste.bias, by = "module") %>%
+  rename(morandin.module = module) %>%
+  left_join(data.frame(ln = OGGs[[2]]$ln, 
+                       holman.module = network[[1]]$colors, 
+                       stringsAsFactors = F), by = "ln") %>%
+  left_join(tbl(my_db, "ebseq_gene_ln") %>% 
+              select(gene, PostFC) %>% collect(n=Inf) %>% rename(ln = gene), by = "ln") %>%
+  rename(FC.pheromone = PostFC)
+overlaps <- table(morandin.oggs$morandin.module, 
+                  morandin.oggs$holman.module) %>% 
+  melt() %>% rename(morandin.module = Var1, 
+                    holman.module = Var2, 
+                    overlaps = value) %>%
+  filter(holman.module != "Module 0") %>%
+  left_join(table(morandin.oggs$morandin.module) %>% 
+              melt() %>% rename(mor.mod.size = value), 
+            by = c("morandin.module" = "Var1")) %>% 
+  left_join(table(morandin.oggs$holman.module) %>% melt() %>% 
+              rename(hol.mod.size = value), by = c("holman.module" = "Var1"))
+
+# List all the Morandin et al. modules that significantly overlap with our own modules
+overlaps <- data.frame(
+  overlaps, 
+  do.call("rbind", 
+          lapply(1:nrow(overlaps), 
+                 function(i) with(overlaps, 
+                                  overlap.hypergeometric.test(
+                                    overlaps[i], 
+                                    mor.mod.size[i], 
+                                    hol.mod.size[i], 
+                                    nrow(morandin.oggs), 
+                                    species = "xx"))))[,2:3]) %>% 
+  filter(Test == "Overlap is higher than expected:") %>% 
+  arrange(p) %>% select(-Test) %>% 
+  left_join(morandin.oggs %>% 
+              select(morandin.module, caste.bias) %>% 
+              distinct(), by = "morandin.module") %>% 
+  mutate(p = p.adjust(p, method = "BH"),
+         morandin.module = paste("Module", morandin.module)) %>%
+  filter(p < 0.05) 
+names(overlaps) <- c("Morandin module", "Holman module", "n overlapping genes", "Size of Morandin module", "Size of Holman module", "p-value", "Caste bias of Morandin module")
+```
+
+**Table S`r numbering("supp.table.counter")`**: A list of the six module pairs, from Morandin _et al._ 2016 and the present study, which had significantly more genes in common than expected by chance. The p-values were calculated by running hypergeometric tests on all possible pairs of modules from the two studies, and then adjusting all the p-values using the Benjamini-Hochberg procedure. 
+```{r}
+saveRDS(overlaps, file = "supplement/tab_S17.rds")
+overlaps %>% pander(split.cell = 40, split.table = Inf)
+```
+
+
+A list of the genes (OGGs) that appear in the present study's Module 1 (which is pheromone-sensitive), and also in Morandin et al.'s Module 31 (which is caste-biased).
+```{r}
+morandin.oggs %>% 
+  filter(morandin.module == 31, holman.module == "Module 1") %>% 
+  select(am, apis.name) %>% rename(`Apis ortholog ID` = am, `Apis ortholog name` = apis.name) %>% 
+  kable.table()
+```
+
+A list of the genes (OGGs) that appear in the present study's Module 4 (which is pheromone-sensitive), and also in Morandin et al.'s Module 13 (which is caste-biased).
+```{r}
+morandin.oggs %>% 
+  filter(morandin.module == 13, holman.module == "Module 4") %>% 
+  select(am, apis.name) %>% rename(`Apis ortholog ID` = am, `Apis ortholog name` = apis.name) %>% 
+  pander(split.cell = 40, split.table = Inf)
+```
+
+ 
+
+## GO and KEGG enrichment for differentially expressed genes
+First, define some functions we will need. See also the R script `Script to set up for GO analyses.R`, which was used to get the GO and KEGG data for _Apis_. 
+
+```{r module.funs,warning=FALSE,message=FALSE,result='hide'}
+library(GO.db)
+library(AnnotationHub)
+select <- dplyr::select
+rename <- dplyr::rename
+filter <- dplyr::filter
+
+if(!file.exists("data/component spreadsheets of queen_pheromone.db/all_apis_go_terms.rds")){
+  library(AnnotationHub)
+  # Connect to AnnotationHub, and get the annotations for A mellifera
+  hub <- AnnotationHub::AnnotationHub()
+ 
+  apis.db <- hub[["AH62534"]]
+  apis_go_table <- dbconn(apis.db) %>% tbl("go") %>% collect() # Connect to GO table in the database
+  
+  apis_go <- tbl(dbconn(apis.db), "go") %>% left_join(tbl(dbconn(apis.db), "entrez_genes")) %>%
+    select(ENTREZID, GO, ONTOLOGY) %>%
+    rename(gene = ENTREZID, ontology = ONTOLOGY) %>% collect(n = Inf)
+  
+  apis_entrez_names <- tbl(dbconn(apis.db), "gene_info") %>% left_join(tbl(dbconn(apis.db), "entrez_genes")) %>%
+    select(ENTREZID, GENENAME) %>%
+    rename(entrez = ENTREZID, name = GENENAME) %>% collect(n = Inf)
+  
+  go_meanings <- dbconn(GO.db) %>% tbl("go_term") %>% select(go_id, term, ontology) %>% collect()
+  
+  saveRDS(apis.go, file = "data/component spreadsheets of queen_pheromone.db/all_apis_go_terms.rds")
+  saveRDS(go_meanings, file = "data/component spreadsheets of queen_pheromone.db/go_meanings.rds")
+  
+  my_db$con %>% db_drop_table(table = "apis_go")
+  copy_to(my_db, apis_go, "apis_go", temporary = FALSE)
+  
+  my_db$con %>% db_drop_table(table = "apis_entrez_names")
+  copy_to(my_db, apis_entrez_names, "apis_entrez_names", temporary = FALSE)
+  
+  my_db$con %>% db_drop_table(table = "go_meanings")
+  copy_to(my_db, go_meanings, "go_meanings", temporary = FALSE)
+}
+
+# Makes a database shortcut (lazy query) to a table of parent and child GO term relationships, from the massive GO.db database
+make_db_shortcut <- function(tabl){
+  dbconn(GO.db) %>% tbl("go_bp_offspring") %>%
+    left_join(dbconn(GO.db) %>% tbl("go_term") %>% select(`_id`, go_id), by = "_id") %>% rename(parent_GO = go_id) %>%
+    left_join(dbconn(GO.db) %>% tbl("go_term") %>% select(`_id`, go_id), by = c("_offspring_id" = "_id")) %>%
+    rename(child_GO = go_id) %>% select(parent_GO, child_GO)
+}
+
+# Function to get all the descendants of a focal GO term, given its "hierarchy" (i.e. one of the lazy db queries BP, MF, or CC)
+get_descendants <- function(ancestor, hierarchy) hierarchy %>% filter(parent_GO == ancestor) %>% select(child_GO) %>% collect() %>% .$child_GO
+
+# Fucntion to run GSEA implemented in the fgsea package
+GO.and.KEGG.gsea <- function(tabl = NULL, df = NULL, min.size = 5, keep.all = FALSE){
+  
+  p <- 0.05; if(keep.all) p <- 1 # Set the significance threshold
+  
+  if(!is.null(tabl)){
+    # First, grab the data for the focal species. If not Apis, then get the names of the Apis orthologs via reciprocal best BLAST
+    if(tabl == "ebseq_gene_am") {df <- tbl(my_db, tabl) %>% collect()}
+    if(tabl == "ebseq_gene_bt") {
+      df <- tbl(my_db, "ebseq_gene_bt") %>% collect() %>%
+        left_join(make.OGGs(c("am", "bt"))[[2]], by = c("gene" = "bt")) %>%
+        dplyr::select(-gene) %>% rename(gene = am) %>% filter(!is.na(gene))
+    }
+    if(tabl == "ebseq_gene_lf") {
+      df <- tbl(my_db, "ebseq_gene_lf") %>% collect() %>%
+        left_join(make.OGGs(c("am", "lf"))[[2]], by = c("gene" = "lf")) %>%
+        select(-gene) %>% rename(gene = am) %>% filter(!is.na(gene))
+    }
+    if(tabl == "ebseq_gene_ln") {
+      df <- tbl(my_db, "ebseq_gene_ln") %>% collect() %>%
+        left_join(make.OGGs(c("am", "ln"))[[2]], by = c("gene" = "ln")) %>%
+        select(-gene) %>% rename(gene = am) %>% filter(!is.na(gene))
+    }
+    # Calculate pheromone sensitivity for each gene
+    df <- df %>% mutate(sensitivity = abs(log2(PostFC)) ) %>% arrange(-sensitivity) %>% as.data.frame() 
+  }
+  
+  # Set up the geneList object in the form needed by the fgsea function - named, ranked vector of pheromone sensitivity per gene
+  geneList <- df$sensitivity
+  names(geneList) <- entrez.tbl$entrez.id[match(df$gene, entrez.tbl$gene)] # Convert Beebase2 to Entrez gene names
+  gene_universe <- names(geneList)
+  
+  # Internal function to run GO enrichment
+  GO.enrichment <- function(geneList, ontol){
+    
+    pathways <- tbl(my_db, "apis_go") %>% 
+      filter(gene %in% gene_universe, 
+             ontology == ontol) %>% 
+      select(-ontology) %>% collect(n=Inf) 
+    pathways <- with(pathways, split(gene, GO))
+    result <- fgsea::fgsea(pathways, geneList, nperm = 10000, minSize = min.size, maxSize = 500) %>% 
+      filter(pval <= p) 
+    
+    collapse_pathways <- fgsea::collapsePathways(result, pathways, geneList)
+    pathways_to_keep <- c(collapse_pathways[[1]], names(collapse_pathways[[2]]))
+    result <- result %>% filter(pathway %in% pathways_to_keep)
+    
+    result <- result %>% 
+      rename(ID = pathway) %>% 
+      left_join(tbl(my_db, "go_meanings") %>% 
+                  select(-ontology) %>% collect(n=Inf), by = c("ID" = "go_id")) 
+    
+    if(nrow(result) == 0) return(NULL)
+    if(ontol == "BP") Test_type <- "GO: Biological process"
+    if(ontol == "MF") Test_type <- "GO: Molecular function"
+    if(ontol == "CC") Test_type <- "GO: Cellular component"
+    data.frame(Test_type = Test_type, result, stringsAsFactors = FALSE)
+  }
+  
+  # Internal function to run KEGG enrichment
+  kegg.enrichment <- function(geneList){
+    apis_kegg <- clusterProfiler::download_KEGG("ame")
+    apis_kegg_names <- apis_kegg[[2]]
+    apis_kegg_focal <- apis_kegg[[1]] %>% filter(to %in% gene_universe)
+    pathways <- with(apis_kegg_focal, split(to, from))
+    result <- fgsea::fgsea(pathways, geneList, nperm = 10000, minSize = min.size, maxSize = 500) %>% 
+      filter(pval <= p) 
+    collapse_pathways <- fgsea::collapsePathways(result, pathways, geneList)
+    
+    result <- result %>% filter(pathway %in% c(collapse_pathways[[1]], names(collapse_pathways[[2]]))) %>% 
+      rename(ID = pathway) %>% 
+      left_join(apis_kegg_names %>% rename(term = to), by = c("ID" = "from")) %>%
+      mutate(ID = str_replace_all(ID, "ame", "KEGG:"))
+    
+    if(nrow(result) == 0) return(NULL)
+    data.frame(Test_type = "KEGG", result, stringsAsFactors = FALSE) 
+  }
+  
+  rbind(GO.enrichment(geneList, "BP"),
+        GO.enrichment(geneList, "MF"),
+        GO.enrichment(geneList, "CC"),
+        kegg.enrichment(geneList))  
+}
+
+# The previous function has a call to collapse_pathways(), which is great for finding over-arching patterns, but it results in a patchy version of Figure 2. This is because the pathways get collapsed slightly differently in each species, based on which genes happen to have detectable orthologs in A. mellifera, plus the gene expression data itself. This function attempts to fill all the holes in Figure 2 by running additional GSEA tests on all the GO terms that are missing from the figure. A small number of holes remain in Figure 2 due to missing orthologs in the non-Apis species, but mostly it does a good job.
+test_child_pathways <- function(row, job_list, three_hierarchies, ebseq_tables, apis_go, go_meanings, three_OGGs, entrez.tbl){ # input: a dataframe of jobs, and the row of the job that needs doing
+  
+  # Get the focal GO_id, ontology, species, and GO tree
+  go_id <- job_list$GO[row]
+  ontol <- job_list$Test_type[row]
+  Species <- job_list$Species[row]
+  if(grepl("Biological", ontol)) {hierarchy <- three_hierarchies[[1]]; short_ontol <- "BP"}
+  if(grepl("Molecular", ontol))  {hierarchy <- three_hierarchies[[2]]; short_ontol <- "MF"}
+  if(grepl("Cellular", ontol))   {hierarchy <- three_hierarchies[[3]]; short_ontol <- "CC"}
+  
+  # Get the relevant data needed to rank the genes and make the 'geneList' object
+  if(Species == "am") df <- ebseq_tables[[1]]
+  if(Species == "bt") {
+    df <- ebseq_tables[[2]] %>%
+      left_join(three_OGGs[[1]], by = c("gene" = "bt")) %>%
+      dplyr::select(-gene) %>% rename(gene = am) %>% filter(!is.na(gene))
+  }
+  if(Species == "lf") {
+    df <- ebseq_tables[[3]] %>%
+      left_join(three_OGGs[[2]], by = c("gene" = "lf")) %>%
+      dplyr::select(-gene) %>% rename(gene = am) %>% filter(!is.na(gene))
+  }
+  if(Species == "ln") {
+    df <- ebseq_tables[[4]] %>%
+      left_join(three_OGGs[[3]], by = c("gene" = "ln")) %>%
+      dplyr::select(-gene) %>% rename(gene = am) %>% filter(!is.na(gene))
+  }
+  
+  # Set up the geneList object in the form needed by the fgsea function - named, ranked vector of pheromone sensitivity per gene
+  df <- df %>% mutate(sensitivity = abs(log2(PostFC))) %>% arrange(-sensitivity) %>% as.data.frame() 
+  geneList <- df$sensitivity
+  names(geneList) <- entrez.tbl$entrez.id[match(df$gene, entrez.tbl$gene)] # Convert Beebase2 to Entrez gene names
+  gene_universe <- names(geneList)
+  
+  # Run the GSEA, just on the focal GO term (and its descendants)
+  pathways <- apis_go %>% filter(gene %in% gene_universe, 
+                                 ontology == short_ontol) %>% select(-ontology) 
+  
+  pathways$GO[pathways$GO %in% get_descendants(go_id, hierarchy)] <- go_id
+  pathways <- with(pathways, split(gene, GO))
+  foc <- which(names(pathways) == go_id)
+  result <- fgsea::fgsea(pathways[foc], geneList, nperm = 10000)
+  
+  if(nrow(result) > 0) {
+    result <- rename(result, ID = pathway) %>% 
+      left_join(go_meanings %>% select(-ontology), by = c("ID" = "go_id")) 
+    
+    return(data.frame(Test_type = ontol, result, Species, stringsAsFactors = FALSE))
+  }
+  else return(NULL)
+}
+
+# Function that attempts to fill in the gaps using test_child_pathways()
+fill_in_GSEA_results <- function(GSEA_results){
+  # Remove all KEGG and GO terms except those that are significant in at least one species
+  results <- GSEA_results %>%
+    filter(!is.nan(NES)) %>%
+    filter(ID %in% (GSEA_results %>% filter(pval < 0.05) %>% .$ID %>% unique))
+  
+  # List GO terms that were not measured in all 4 species (often because of the GO concatenation step above)
+  incomplete_GOs <- results %>% 
+    filter(Test_type != "KEGG") %>% 
+    group_by(Test_type, ID) %>% summarise(n = n()) %>% filter(!(n %in% c(4, 8, 12))) %>% .$ID
+  
+  job_list <- expand.grid(Species = c("am", "bt", "lf", "ln"),
+                          GO = incomplete_GOs) %>%
+    filter(!(paste(Species, GO) %in% paste(results$Species, results$GO))) %>%
+    left_join(results %>% rename(GO = ID) %>% select(GO, Test_type) %>% distinct(), by = "GO")
+  
+  # Remove combinations that were already run from the job_list
+  job_list <- job_list %>% filter(!(paste(Species, GO) %in% paste(GSEA_results$Species, GSEA_results$ID)))
+  
+  # Pull all of this information into memory, so that we can use mclapply for speed 
+  # (mclapply does not play well with database connections)
+  three_hierarchies <- list(
+    make_db_shortcut("go_bp_offspring") %>% collect(),
+    make_db_shortcut("go_mf_offspring") %>% collect(),
+    make_db_shortcut("go_cc_offspring") %>% collect()
+  )
+  
+  ebseq_tables <- list(
+    tbl(my_db, "ebseq_gene_am") %>% collect(),
+    tbl(my_db, "ebseq_gene_bt") %>% collect(),
+    tbl(my_db, "ebseq_gene_lf") %>% collect(),
+    tbl(my_db, "ebseq_gene_ln") %>% collect()
+  )
+  apis_go <- tbl(my_db, "apis_go") %>% collect()
+  go_meanings <- tbl(my_db, "go_meanings") %>% collect()
+  
+  three_OGGs <- list(
+    make.OGGs(c("am", "bt"))[[2]],
+    make.OGGs(c("am", "lf"))[[2]],
+    make.OGGs(c("am", "ln"))[[2]]
+  )
+  
+  rbind(results, 
+        lapply(1:nrow(job_list), function(i) 
+          test_child_pathways(i, job_list, three_hierarchies, ebseq_tables, apis_go, go_meanings, three_OGGs, entrez.tbl)) %>% do.call("rbind", .)) %>%
+    distinct() %>%
+    rename(Description = term, pvalue = pval, p.adjust = padj) %>%
+    filter(!is.nan(NES)) %>%
+    mutate(p.adjust = p.adjust(pvalue, method = "BH")) %>%
+    arrange(Test_type, Species, pvalue) %>% ungroup()
+}
+
+
+# Run the GO and KEGG enrichment analyses using GSEA implemented in fgsea 
+# The functions here run GSEA on each species and all 4 ontologies, 
+# then collapse redundant, smaller GO terms into higher-order ones, and then fill in any gaps to make Figure 2 less patchy
+set.seed(1)
+GO_and_KEGG_results_GSEA <- rbind(
+  GO.and.KEGG.gsea("ebseq_gene_am", keep.all = TRUE) %>% mutate(Species = "am"),
+  GO.and.KEGG.gsea("ebseq_gene_bt", keep.all = TRUE) %>% mutate(Species = "bt"), 
+  GO.and.KEGG.gsea("ebseq_gene_lf", keep.all = TRUE) %>% mutate(Species = "lf"), 
+  GO.and.KEGG.gsea("ebseq_gene_ln", keep.all = TRUE) %>% mutate(Species = "ln")) %>%
+  fill_in_GSEA_results() 
+```
+
+### GSEA for pheromone sensitivity of gene expression
+Figure 2 provides a summary of the significant and/or interesting enriched GO terms, and is intended to provide a compact summary of the next 3 figures, which show every GO term for which we had data on at least 5 genes. 
+```{r fig.height = 14, fig.width=9}
+make_enrichment_heatmap <- function(GO_and_KEGG_results, pval_cutoff){
+  plot_data <- GO_and_KEGG_results %>% 
+    mutate(sig = " ",
+           sig = replace(sig, pvalue < 0.05, "*"),
+           sig = replace(sig, p.adjust < 0.05, "**")) 
+  
+  levels <- plot_data %>% 
+    group_by(Test_type, Description) %>%
+    summarise(summed_NES = sum(NES), n = n()) %>%
+    arrange(desc(Test_type), summed_NES) %>% .$Description
+  
+  
+  grid_arrange_shared_legend <- function(p1, p2) {
+    plots <- list(p1, p2)
+    g <- ggplotGrob(plots[[1]] + theme(legend.position="right"))$grobs
+    legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+    lwidth <- sum(legend$width)
+    arrangeGrob(
+      arrangeGrob(p1 + theme(legend.position="none"), 
+                  p2 + theme(legend.position="none"), ncol = 2, widths = c(0.56,0.44)),
+      legend,
+      ncol = 2,
+      widths = unit.c(unit(1, "npc") - lwidth, lwidth))
+  }
+
+  output <- grid_arrange_shared_legend(
+    plot_data %>% mutate(Description = factor(Description, levels)) %>%
+      filter(Test_type %in% c("GO: Biological process", "GO: Molecular function")) %>%
+      ggplot(aes(Species, Description, fill = NES)) +
+      geom_tile(colour = "grey10", size = 0.4, linetype = 3) + 
+      geom_text(aes(label = sig)) +
+      scale_fill_distiller(palette = "RdYlBu") + 
+      scale_y_discrete(labels = function(x) str_wrap(x, width = 55), expand = c(0,0)) +
+      scale_x_discrete(expand = c(0,0)) +
+      facet_grid(rows = vars(Test_type), scales = "free_y", space = "free_y") + 
+      theme_minimal() +
+      theme(panel.border = element_rect(size = 0.8, colour = "grey10", fill = NA),
+            strip.text = element_text(size = 10)) + 
+      guides(fill = guide_colourbar(frame.colour = "grey10", ticks.colour = "grey10")) + 
+      ylab(NULL) + xlab(NULL), 
+    plot_data %>% mutate(Description = factor(Description, levels)) %>%
+      filter(Test_type %in% c("GO: Cellular component", "KEGG")) %>%
+      ggplot(aes(Species, Description, fill = NES)) +
+      geom_tile(colour = "grey10", size = 0.4, linetype = 3) + 
+      geom_text(aes(label = sig)) +
+      scale_fill_distiller(palette = "RdYlBu") + 
+      scale_y_discrete(labels = function(x) str_wrap(x, width = 30), expand = c(0,0)) +
+      scale_x_discrete(expand = c(0,0)) +
+      facet_grid(rows = vars(Test_type), scales = "free_y", space = "free_y") + 
+      theme_minimal() +
+      theme(panel.border = element_rect(size = 0.8, colour = "grey10", fill = NA),
+            strip.text = element_text(size = 10)) + 
+      guides(fill = guide_colourbar(frame.colour = "grey10", ticks.colour = "grey10")) + 
+      ylab(NULL) + xlab(NULL))  
+  
+  grobTree(rectGrob(gp = gpar(fill="white", lwd = 0)), output)
+}
+
+figure2 <- make_enrichment_heatmap(GO_and_KEGG_results_GSEA, pval_cutoff = 0.05)
+ggsave(figure2, file = "figures/Figure 2 - GO and KEGG.pdf", height = 11.8, width = 9.5)
+grid.draw(figure2)
+```
+**Figure 2**: A list of all the Gene Ontology (GO) and Kyoto Encyclopedia of Genes and Genomes (KEGG) terms that were significantly enriched or de-enriched among pheromone-sensitive genes in at least one of the four species. The colour shows the normalised expression score from gene set enrichment analysis; positive (red) values indicate that the ontology term is over-represented among genes whose expression is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among these genes. Asterisks denote statistically significant enrichment (p < 0.05), and double asterisks mark results that remained significant after Benjamini-Hochberg correction. Empty squares denote cases where we did not find at least 5 genes annotated with the focal term.
+
+
+
+### Tabular results for GSEA for pheromone sensitivity in gene expression {.tabset}
+Click the tabs to see tables for each of the four species.
+
+#### _Apis mellifera_
+**Table S`r numbering("supp.table.counter")`**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Apis mellifera_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r}
+add_name_col <- function(df){
+  sapply(df$leadingEdge, function(x){
+      data.frame(gene = x, stringsAsFactors = FALSE) %>%
+        left_join(tbl(my_db, "apis_entrez_names") %>% collect(), by = c("gene" = "entrez")) %>% .$name %>%
+        paste0(collapse = "; ")
+    }) -> df$gene_names
+  df %>% dplyr::rename(enriched_gene_ids = leadingEdge) %>% 
+    mutate(enriched_gene_ids = map_chr(enriched_gene_ids, function(x) paste0(x, collapse = " ")))
+}
+
+tab_S18 <- GO_and_KEGG_results_GSEA %>% 
+  filter(Species == "am" & pvalue < 0.05) %>%
+  arrange(Test_type, pvalue) %>%
+  select(-Species, -ES, -nMoreExtreme, -size) %>%
+  add_name_col() 
+
+saveRDS(tab_S18 %>% select(-enriched_gene_ids, -gene_names), file = "supplement/tab_S18.rds")
+kable.table(tab_S18)
+```
+
+#### _Bombus terrestris_
+**Table S`r numbering("supp.table.counter")`**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Bombus terrestris_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r}
+tab_S19 <- GO_and_KEGG_results_GSEA %>% 
+  filter(Species == "bt" & pvalue < 0.05) %>%
+  arrange(Test_type, pvalue) %>%
+  select(-Species, -ES, -nMoreExtreme, -size) %>%
+  add_name_col() 
+
+saveRDS(tab_S19 %>% select(-enriched_gene_ids, -gene_names), file = "supplement/tab_S19.rds")
+kable.table(tab_S19)
+```
+
+#### _Lasius flavus_
+**Table S`r numbering("supp.table.counter")`**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Lasius flavus_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r}
+tab_S20 <- GO_and_KEGG_results_GSEA %>% 
+  filter(Species == "lf" & pvalue < 0.05) %>%
+  arrange(Test_type, pvalue) %>%
+  select(-Species, -ES, -nMoreExtreme, -size) %>%
+  add_name_col() 
+
+saveRDS(tab_S20 %>% select(-enriched_gene_ids, -gene_names), file = "supplement/tab_S20.rds")
+kable.table(tab_S20)
+```
+
+#### _Lasius niger_
+**Table S`r numbering("supp.table.counter")`**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in gene expression in _Lasius niger_. The table lists GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying the enrichment result.
+```{r}
+tab_S21 <- GO_and_KEGG_results_GSEA %>% 
+  filter(Species == "ln" & pvalue < 0.05) %>%
+  arrange(Test_type, pvalue) %>%
+  select(-Species, -ES, -nMoreExtreme, -size) %>%
+  add_name_col() 
+
+saveRDS(tab_S21 %>% select(-enriched_gene_ids, -gene_names), file = "supplement/tab_S21.rds")
+kable.table(tab_S21)
+```
+
+
+
+
+## GO and KEGG enrichment for differentially spliced genes
+This section uses a metric that measures the sensitivity of alternative splicing to pheromone treatment (referred to in the code below as `sensitivity`). This metric is calculated by finding the highest and lowest log fold change in expression among the isoforms for gene $i$, and then taking the difference. For example, a gene with two isoform, with log fold change values of -1 and +3, would have a `sensitivity` value of 4. In the following code, we calculate `sensitivity` for all of the genes which A) have orthologs in all 4 species, and B) have 2 or more isoforms. We then calculate the Spearman correlation in `sensitivity` across genes for each species pair, and also perform GSEA (as was previously done for the data on pheromone sensitivity).
+
+```{r warning=FALSE, result='hide',message=FALSE}
+# Calculate splicing sensitivity for Apis:
+am_isoforms <- tbl(my_db, "ebseq_isoform_am") %>%
+  left_join(tbl(my_db, "isoforms_am"), by = "isoform") %>% 
+  arrange(gene) %>% collect()
+# Discard genes with only one splice variant
+keep <- am_isoforms %>% group_by(gene) %>% summarise(n_isoforms = n()) %>% filter(n_isoforms > 1) %>% .$gene 
+am_isoforms <- am_isoforms %>% filter(gene %in% keep) %>%
+  select(gene, PPDE, PostFC) 
+# Splicing index is max - min of the log(FC) for the isoforms of the focal gene
+am.splice <- am_isoforms %>% 
+  split(.$gene) %>%
+  purrr::map_dbl(function(x){
+    max(log(x$PostFC)) - min(log(x$PostFC))
+  }) 
+am.splice <- data.frame(gene = names(am.splice),
+                        sensitivity = unname(am.splice), stringsAsFactors = FALSE) %>%
+  arrange(-sensitivity)
+
+# Calculate splicing sensitivity for the other 3 species. Here, there is an extra step: map the genes to their Apis orthologs
+get_splice_score <- function(sp){
+  tabl <- paste("ebseq_isoform_", sp, sep = "")
+  iso.table <- paste("isoforms_", sp, sep = "")
+  ortho.table <- make.OGGs(c("am", sp))[[2]]
+  
+  isoforms <- tbl(my_db, tabl) %>%
+    left_join(tbl(my_db, iso.table), by = "isoform") %>% collect(n=Inf) %>%
+    arrange(gene) %>% 
+    left_join(ortho.table, by = c("gene" = sp)) %>%
+    select(-gene) %>% dplyr::rename(gene = am) %>%
+    filter(!is.na(gene)) %>% collect()
+  
+  keep <- isoforms %>% group_by(gene) %>% summarise(n_isoforms = n()) %>% filter(n_isoforms > 1) %>% .$gene 
+  
+  isoforms <- isoforms %>% filter(gene %in% keep) %>%
+    select(gene, PPDE, PostFC) 
+  
+  isoforms <- isoforms %>% 
+    split(.$gene) %>%
+    purrr::map_dbl(function(x){
+      max(log(x$PostFC)) - min(log(x$PostFC))
+    }) 
+  data.frame(gene = names(isoforms), 
+             sensitivity = unname(isoforms), stringsAsFactors = FALSE) %>%
+    arrange(-sensitivity)
+}
+
+# Get the splicing index for all 4 species, and restrict to the set of genes that have orthologs in all 4 species 
+splice_scores <- list(am.splice, 
+                      get_splice_score("bt"), 
+                      get_splice_score("lf"), 
+                      get_splice_score("ln"))
+
+# Find the correlations between each species pair in the splicing index
+splicing_correlations <- data.frame(t(combn(1:4, 2)), rho = 0, p = 0) %>% 
+  dplyr::rename(Species1 = X1, Species2 = X2)
+for(i in 1:nrow(splicing_correlations)){
+  focal <- left_join(splice_scores[[splicing_correlations[i, 1]]], 
+                     splice_scores[[splicing_correlations[i, 2]]], by="gene")
+  focal <- focal[complete.cases(focal), ]
+  test <- with(focal, cor.test(sensitivity.x, sensitivity.y, method = "spearman"))
+  splicing_correlations$rho[i] <- test$estimate
+  splicing_correlations$p[i] <- test$p.value
+}
+splicing_correlations[,1] <- c("Apis mellifera", "Bombus terrestris", "Lasius flavus", "Lasius niger")[splicing_correlations[,1]]
+splicing_correlations[,2] <- c("Apis mellifera", "Bombus terrestris", "Lasius flavus", "Lasius niger")[splicing_correlations[,2]]
+splicing_correlations$p.adjust <- p.adjust(splicing_correlations$p, method = "BH")
+splicing_correlations$sig <- " "
+splicing_correlations$sig[splicing_correlations$p.adjust < 0.05] <- "*"
+
+# Perform GSEA on the splicing index
+GO_and_KEGG_splicing_GSEA <- rbind(
+  GO.and.KEGG.gsea(df = splice_scores[[1]], keep.all = TRUE) %>% mutate(Species = "am"),
+  GO.and.KEGG.gsea(df = splice_scores[[2]], keep.all = TRUE) %>% mutate(Species = "bt"), 
+  GO.and.KEGG.gsea(df = splice_scores[[3]], keep.all = TRUE) %>% mutate(Species = "lf"), 
+  GO.and.KEGG.gsea(df = splice_scores[[4]], keep.all = TRUE) %>% mutate(Species = "ln")) %>%
+  fill_in_GSEA_results() 
+```
+
+### Inter-species correlations in the sensitivity of alternative splicing to queen pheromone across pairs of orthologous genes
+**Table S`r numbering("supp.table.counter")`**: The table shows the Spearman correlation (rho) and p-value for correlations across genes in the pheromone-sensitivity of their isoform production, for each pair of species. For each gene, our metric of the sensitivity of splicing to pheromone treatment was calculated by taking the difference between the highest and lowest log fold change values for the various isoforms. Thus, genes for which one isoform strongly increased in expression and one strongly decreased following pheromone treatment score high, and those in which there is no response to pheromone -- or a consistent response for all isoforms -- score low. The results suggest that the pheromone sensitivity in splicing is highly conserved between orthologous bee genes, and somewhat less conserved between orthologous ant genes, and between bee and ants genes.
+```{r}
+saveRDS(splicing_correlations, file = "supplement/tab_S22.rds")
+splicing_correlations %>% pander(split.cell = 40, split.table = Inf)
+```
+
+
+### GSEA for pheromone sensitivity of alternative splicing 
+```{r fig.height=8, fig.width=8}
+fig_S5 <- GO_and_KEGG_splicing_GSEA %>% make_enrichment_heatmap()
+saveRDS(fig_S5, file = "supplement/fig_S5.rds")
+fig_S5 %>% grid.draw()
+```
+<br></br>
+**Figure S`r numbering("supp.figure.counter")`**: Genes for which alternative splicing is strongly affected by queen pheromone tend to have similar Gene Ontology and KEGG terms in ants and bees, although the data do not provide strong evidence for or against inter-species similarity. The colour shows the normalised expression score from a GSEA (gene set enrichment analysis) test implemented in the R package `fgsea`; positive (red) values indicate that the GO or KEGG term is over-represented among genes whose splicing is strongly affected by queen pheromone, and negative (blue) values indicate under-representation among those genes. Asterisks denote statistically significant enrichment (p < 0.05), and double asterisks mark results that remained significant after adjusting the p-values for multiple testing using the Benjamini-Hochberg method. Empty squares denote cases where we did not find at least 5 alternatively spliced genes annotated with the focal term.
+
+
+
+### Tabular results for GSEA for pheromone sensitivity of alternative splicing 
+
+**Table S`r numbering("supp.table.counter")`**: The results of GSEA (gene set enrichment analysis) for pheromone sensitivity in alternative splicing. The table lists statistically significant GO and KEGG terms with their NES (normalized enrichment score), the associated raw and adjusted p-values (adjustment was performed using Benjamini-Hochberg correction), and the genes underlying each enrichment result.
+```{r}
+tab_S23 <- GO_and_KEGG_splicing_GSEA %>% 
+  filter(pvalue < 0.05) %>%
+  arrange(Species, Test_type, pvalue) %>%
+  select(-ES, -nMoreExtreme, -size) %>%
+  add_name_col() 
+
+saveRDS(tab_S23 %>% select(-gene_names, -enriched_gene_ids), file = "supplement/tab_S23.rds")
+kable.table(tab_S23)
+```
+
+
+
+## GO and KEGG enrichment for transcriptional modules 
+Here, we use hypergeometric tests on each of the 9 modules, testing for enrichment of GO terms in each module.
+```{r results='hide', message=FALSE, warning=FALSE}
+# Find the names for the genes in a given module
+genes.in.module <- function(module.number){
+  colnames(OGGs[[1]])[network[[1]]$colors == paste("Module", module.number)] 
+}
+
+# Get the gene names, and sensitivity to pheromone, for genes in a certain module
+inspect.module.genes <- function(module){
+  gene.names <- tbl(my_db, "bee_names") %>% as.data.frame()
+  gene.names <- gene.names[gene.names$gene %in% genes.in.module(module), ]
+  gene.names$k <- colSums(as.matrix(TOM)[network[[1]]$colors == paste("Module", module), 
+                                        network[[1]]$colors == paste("Module", module)])
+  gene.names <- gene.names %>% arrange(-k)
+  
+  am <- tbl(my_db, "ebseq_gene_am") %>% as.data.frame()
+  gene.names$am_fc <- am$PostFC[match(gene.names$gene, am$gene)]
+  bt <- tbl(my_db, "ebseq_gene_bt") %>% rename(bt = gene) %>% 
+    left_join(tbl(my_db, "bt2am")) %>% as.data.frame()
+  gene.names$bt_fc <- bt$PostFC[match(gene.names$gene, bt$am)]
+  lf <- tbl(my_db, "ebseq_gene_lf") %>% rename(lf = gene) %>% 
+    left_join(tbl(my_db, "lf2am")) %>% as.data.frame()
+  gene.names$lf_fc <- lf$PostFC[match(gene.names$gene, lf$am)]
+  ln <- tbl(my_db, "ebseq_gene_ln") %>% rename(ln = gene) %>% 
+    left_join(tbl(my_db, "ln2am")) %>% as.data.frame()
+  gene.names$ln_fc <- ln$PostFC[match(gene.names$gene, ln$am)]
+  row.names(gene.names) <- NULL
+  gene.names
+}
+
+
+GO.and.KEGG.hypergeometric <- function(gene_set, gene_universe, apis.db, min.size = 5, keep.all = FALSE){
+  
+  p <- 0.05; if(keep.all) p <- 1
+  neatness <- function(x) format(round(x, 4), nsmall = 4) # for rounding
+  
+  GO.enrichment <- function(gene_set, gene_universe, ontol){
+    
+    result <- enrichGO(gene_set, apis.db, ont = ontol, 
+                       pvalueCutoff = p, universe = gene_universe, 
+                       qvalueCutoff = 1, minGSSize = min.size, maxGSSize = 500) 
+    
+    if(is.null(result)) return(NULL)
+    if(nrow(result@result) == 0) return(NULL)
+    result <- gofilter(result, level = 4) # Filter to high-level GO only
+    if(is.null(result)) return(NULL)
+    if(nrow(result@result) == 0) return(NULL)
+    
+    result <- result@result 
+    is_enriched <- sapply(result$GeneRatio, function(x) eval(parse(text=x))) > sapply(result$BgRatio, function(x) eval(parse(text=x)))
+    result <- result[is_enriched, ] %>% mutate(p.adjust = p.adjust(pvalue, method = "BH"))
+    
+    Test_type <- "GO: Biological process"
+    if(ontol == "MF") Test_type <- "GO: Molecular function"
+    if(ontol == "CC") Test_type <- "GO: Cellular component"
+    
+    data.frame(Test_type = Test_type, result, stringsAsFactors = FALSE)
+  }
+  
+  kegg.enrichment <- function(gene_set, gene_universe){
+    
+    
+    result <-  enrichKEGG(gene_set, organism = "ame", keyType = "kegg", pvalueCutoff = p,
+                          gene_universe, minGSSize = min.size, maxGSSize = 500,
+                          qvalueCutoff = 1, use_internal_data = FALSE, pAdjustMethod = "BH")
+    if(is.null(result)) return(NULL)
+    
+    result <- result@result
+    is_enriched <- sapply(result$GeneRatio, function(x) eval(parse(text=x))) > sapply(result$BgRatio, function(x) eval(parse(text=x)))
+    result <- result[is_enriched, ] %>% mutate(p.adjust = p.adjust(pvalue, method = "BH"))
+    if(nrow(result %>% filter(pvalue < p)) == 0) return(NULL)
+    data.frame(Test_type = "KEGG", result, stringsAsFactors = FALSE)
+  }
+  
+  rbind(kegg.enrichment(gene_set, gene_universe), 
+                  GO.enrichment(gene_set, gene_universe, "BP"),
+                  GO.enrichment(gene_set, gene_universe, "MF"),
+                  GO.enrichment(gene_set, gene_universe, "CC")) %>%
+    mutate(ID = str_replace_all(ID, "ame", "KEGG:"),
+           geneID = str_replace_all(geneID, "/", " "))
+}
+
+
+make_module_GO_table <- function(){
+  
+  add_name_col <- function(df){
+    sapply(df$geneID, function(x){
+      data.frame(gene = x, stringsAsFactors = FALSE) %>%
+        left_join(tbl(my_db, "apis_entrez_names") %>% collect(), by = c("gene" = "entrez")) %>% .$name %>%
+        paste0(collapse = "; ")
+    }) -> df$gene_names
+    df %>% mutate(geneID = map_chr(geneID, function(x) paste0(x, collapse = " ")))
+  }
+  
+  hub <- AnnotationHub::AnnotationHub()
+  select <- dplyr::select
+  rename <- dplyr::rename
+  filter <- dplyr::filter
+  apis.db <- hub[["AH62534"]]
+  gene.universe.modules <- entrez.tbl$entrez.id[entrez.tbl$gene %in% OGGs[[2]]$am] %>% as.character() 
+  
+  results <- lapply(1:9, function(i) { # or c(1,4,9)
+    gene_set <- entrez.tbl$entrez.id[entrez.tbl$gene %in% genes.in.module(i)] %>% as.character()
+  
+    df <- GO.and.KEGG.hypergeometric(gene_set, gene.universe.modules, apis.db) 
+    if(is.null(df) || nrow(df) == 0) return(NULL)
+    # # enrichment ratio: proportion genes in sample / proportion in gene universe
+    df$enrichment <- sapply(1:nrow(df), function(i) eval(parse(text = df$GeneRatio[i]))) /
+      sapply(1:nrow(df), function(i) eval(parse(text = df$BgRatio[i])))
+    df %>% mutate(Module = paste("Module", i)) %>% arrange(pvalue)
+  }) %>% do.call("rbind", .) %>%
+  mutate(Description = factor(Description, unique(Description))) %>% 
+    filter(pvalue <= 0.05) # Only keep GO terms where the un-adjusted p is significant
+  
+  results$sig <- "no"  # Use a more strict classification, since the test has higher power
+  results$sig[results$p.adjust <= 0.05] <- "yes" # note: ADJUSTED p
+  results$sig <- relevel(factor(results$sig), ref = "yes")
+  results <- select(results, Module, Test_type, ID, Description, GeneRatio, BgRatio, 
+                    enrichment, pvalue, p.adjust, qvalue, Count, geneID, sig)
+  
+  results$geneID <- strsplit(results$geneID, split = " ")
+  results %>% add_name_col()
+}
+
+module_enrichment_plot <- function(df, is.KEGG = FALSE){
+  label <- "Name of GO term"
+  if(is.KEGG) label <- "Name of KEGG term"
+  df %>% arrange(Module, log2(enrichment)) %>% 
+    mutate(Description = factor(Description, unique(Description)),
+           Test_type = factor(Test_type, c("GO: Biological process", "GO: Molecular function", "GO: Cellular component", "KEGG"))) %>%
+    ggplot(aes(Description, log2(enrichment))) + 
+    geom_bar(aes(fill = sig), stat = "identity", colour = "grey10") + 
+    facet_wrap(~Module) + 
+    scale_fill_brewer(palette = "Accent", direction = -1) + 
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 60)) +
+    theme_bw() +
+    theme(legend.position = "none", strip.background = element_blank(), strip.text = element_text(size = 10)) + 
+    ylab("Log2 fold enrichment") + xlab(label) + 
+    coord_flip() 
+}  
+
+module_GO_table <- make_module_GO_table()
+```
+
+### Figures of the module enrichment results {.tabset}
+
+#### KEGG
+```{r fig.height = 8, fig.width=9, message=FALSE, warning=FALSE, results='hide'}
+module_KEGG <- module_GO_table %>% filter(Test_type == "KEGG", Module %in% c("Module 1", "Module 4", "Module 9")) %>% 
+   module_enrichment_plot(is.KEGG = TRUE)
+ggsave(module_KEGG, file = "figures/Figure 4 - module KEGG.pdf", height = 7, width = 8)
+module_KEGG
+```
+<br></br>
+**Figure 4**: Results of KEGG pathway enrichment analysis for the genes in each of the three significantly pheromone-sensitive transcriptional modules. The gene universe was defined as all genes for which we found an ortholog in all four species (i.e. the set that was used to discover these co-expressed modules). All KEGG terms shown in green were significantly enriched (p < 0.05), and those shown in purple remained significant after correction for multiple testing. Fold enrichment was calculated as the proportion of genes associated with the focal KEGG term in the module, divided by the equivalent proportion in the gene universe.
+
+#### GO BP
+```{r fig.height = 8, fig.width=9, message=FALSE, warning=FALSE, results='hide'}
+fig_S6 <- module_GO_table %>% 
+  filter(Test_type == "GO: Biological process", Module %in% c("Module 1", "Module 4", "Module 9")) %>% 
+  module_enrichment_plot()  
+
+saveRDS(fig_S6, file = "supplement/fig_S6.rds")
+fig_S6
+```
+<br></br>
+**Figure S`r numbering("supp.figure.counter")`**: Comparable figure to Figure 4, showing the results of GO: Biological process enrichment analysis instead of KEGG pathways. 
+
+#### GO MF
+```{r fig.height = 8, fig.width=9, message=FALSE, warning=FALSE, results='hide'}
+fig_S7 <- module_GO_table %>% 
+  filter(Test_type == "GO: Molecular function", Module %in% c("Module 1", "Module 4", "Module 9")) %>% 
+  module_enrichment_plot()  
+
+saveRDS(fig_S7, file = "supplement/fig_S7.rds")
+fig_S7
+```
+<br></br>
+**Figure S`r numbering("supp.figure.counter")`**: Comparable figure to Figure 4, showing the results of GO: Molecular function enrichment analysis instead of KEGG pathways. 
+
+#### GO CC
+```{r fig.height = 8, fig.width=9, message=FALSE, warning=FALSE, results='hide'}
+fig_S8 <- module_GO_table %>% 
+  filter(Test_type == "GO: Cellular component", Module %in% c("Module 1", "Module 4", "Module 9")) %>% 
+  module_enrichment_plot()  
+
+saveRDS(fig_S8, file = "supplement/fig_S8.rds")
+fig_S8
+```
+<br></br>
+**Figure S`r numbering("supp.figure.counter")`**: Comparable figure to Figure 4, showing the results of GO: Cellular component enrichment analysis instead of KEGG pathways. Module 9 is missing because no GO:CC terms were significantly enriched.
+
+### Table of all module enrichment results
+
+**Table S`r numbering("supp.table.counter")`**: List of every significant enrichment test result for each module, for all four ontologies. The latter two columns specify all the genes associated with the focal GO or KEGG term that are found in the module. The GeneRatio and BgRatio columns give the number of genes annotated with the focal term that are present in the focal module or the gene universe, respecitvely. These values were used to calculate the enrichment column, as the proportion of genes associated with the focal annotation term in the module, divided by the equivalent proportion in the gene universe.
+```{r}
+tab_S24 <- module_GO_table %>% select(-sig, -Count) 
+saveRDS(tab_S24 %>% 
+          select(-geneID, -gene_names, -qvalue, -GeneRatio, -BgRatio) %>%
+          mutate(Test_type = str_replace_all(Test_type, " Biological process", "BP"),
+                 Test_type = str_replace_all(Test_type, " Molecular function", "MF"),
+                 Test_type = str_replace_all(Test_type, " Cellular component", "CC")), file = "supplement/tab_S24.rds")
+kable.table(tab_S24)
+```
+
+
+## Inspect the gene list for each module {.tabset} 
+This section lists all the genes in each module, their within-module connectivity values, and their fold-change in expression in response to queen pheromone in each of the four species.
+
+### Module 0
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 0, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+module_gene_list <- function(module){
+  inspect.module.genes(module) %>% 
+  mutate(am_fc = log2(am_fc), bt_fc = log2(bt_fc), lf_fc = log2(lf_fc), ln_fc = log2(ln_fc)) %>% 
+  rename(Gene = gene, Name = name) 
+}
+gene_list <- module_gene_list(0)
+saveRDS(gene_list, file = "supplement/tab_S25.rds")
+kable.table(gene_list)
+```
+
+### Module 1
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 1, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(1)
+saveRDS(gene_list, file = "supplement/tab_S26.rds")
+kable.table(gene_list)
+```
+
+### Module 2
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 2, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(2)
+saveRDS(gene_list, file = "supplement/tab_S27.rds")
+kable.table(gene_list)
+```
+
+### Module 3
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 3, ranked by their within-module connectivity, $k$. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(3)
+saveRDS(gene_list, file = "supplement/tab_S28.rds")
+kable.table(gene_list)
+```
+
+### Module 4
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 4, ranked by their within-module connectivity, *k*. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(4)
+saveRDS(gene_list, file = "supplement/tab_S29.rds")
+kable.table(gene_list)
+```
+
+### Module 5
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 5, ranked by their within-module connectivity, *k*. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(5)
+saveRDS(gene_list, file = "supplement/tab_S30.rds")
+kable.table(gene_list)
+```
+
+### Module 6
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 6, ranked by their within-module connectivity, *k*. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(6)
+saveRDS(gene_list, file = "supplement/tab_S31.rds")
+kable.table(gene_list)
+```
+
+### Module 7
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 7, ranked by their within-module connectivity, *k*. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(7)
+saveRDS(gene_list, file = "supplement/tab_S32.rds")
+kable.table(gene_list)
+```
+
+### Module 8
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 8, ranked by their within-module connectivity, *k*. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(8)
+saveRDS(gene_list, file = "supplement/tab_S33.rds")
+kable.table(gene_list)
+```
+
+### Module 9
+**Table S`r numbering("supp.table.counter")`**: List of all the genes in Module 9, ranked by their within-module connectivity, *k*. The latter four columns give the Log$_2$ fold-change in expression in response to queen pheromone in each of the four species.
+```{r warning=FALSE, message=FALSE}
+gene_list <- module_gene_list(9)
+saveRDS(gene_list, file = "supplement/tab_S34.rds")
+kable.table(gene_list)
+```
+
+
+## R session information
+This section shows the operating system and R packages used to produce this document. 
+```{r}
+sessionInfo() %>% pander()
+```
+
+```{r echo=FALSE, results="hide"}
+unlink("blockwiseTOM-block.1.RData")
+```
+

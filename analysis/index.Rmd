@@ -1,9 +1,17 @@
 ---
-title: "Home"
+title: "Comparative transcriptomics of social insect queen pheromones"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
     toc: false
 ---
 
-Welcome to my research website.
+This website presents all the code used for the paper _Comparative transcriptomics of social insect queen pheromones_ by Holman, Helantera, Trontti, and Mikheyev (2019, _Nature Communications_). 
+
+
+# Bioinformatics
+Click [here](bioinformatics.html) to see all the bash and Python scripts used to prepare the RNA-seq data and measure differential gene expression. Primary author: Sasha Mikheyev.
+
+# Statistics and plotting
+Click [here](statistical-analysis.html) to see a report generated with R Markdown, which details all statistical analyses, and generates all the figures and tables. Primary author: Luke Holman.
+
