@@ -441,10 +441,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtreef831611366f4853ff2f41f5f5dd9dad7087d25d4targetblankf831611a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/tree/f831611366f4853ff2f41f5f5dd9dad7087d25d4" target="_blank">f831611</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtree7d083c05a3bac787dda3c4d477b8d0d7f57438c4targetblank7d083c0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/lukeholman/queen-pheromone-RNAseq/tree/7d083c05a3bac787dda3c4d477b8d0d7f57438c4" target="_blank">7d083c0</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtreef831611366f4853ff2f41f5f5dd9dad7087d25d4targetblankf831611a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomlukeholmanqueenpheromoneRNAseqtree7d083c05a3bac787dda3c4d477b8d0d7f57438c4targetblank7d083c0a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -455,6 +455,8 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
+    Ignored:    bioinformatics_scripts/data/
+    Ignored:    bioinformatics_scripts/ref/
     Ignored:    data/.DS_Store
     Ignored:    data/apis_gene_comparisons/.DS_Store
     Ignored:    data/apis_gene_comparisons/wojciechowski_histone_data/.DS_Store
@@ -466,23 +468,9 @@ Ignored files:
     Ignored:    manuscript/
     Ignored:    supplement/
 
-Untracked files:
-    Untracked:  bioinformatics_scripts/
-    Untracked:  blockwiseTOM-block.1.RData
-
 Unstaged changes:
-    Deleted:    bioinformatics scripts/README.md
-    Deleted:    bioinformatics scripts/data
-    Deleted:    bioinformatics scripts/ebseq.sh
-    Deleted:    bioinformatics scripts/kallisto.sh
-    Deleted:    bioinformatics scripts/orthodb.py
-    Deleted:    bioinformatics scripts/ref
-    Deleted:    bioinformatics scripts/rsem-generate-data-matrix
-    Deleted:    bioinformatics scripts/rsem.sh
-    Deleted:    bioinformatics scripts/tophat.sh
-    Deleted:    bioinformatics scripts/transdecoder.sh
-    Deleted:    bioinformatics scripts/trimmomatic.sh
-    Deleted:    bioinformatics scripts/trinity.sh
+    Deleted:    bioinformatics_scripts/data
+    Deleted:    bioinformatics_scripts/ref
 
 </code></pre>
 <p>
@@ -521,6 +509,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/lukeholman/queen-pheromone-RNAseq/7d083c05a3bac787dda3c4d477b8d0d7f57438c4/docs/statistical-analysis.html" target="_blank">7d083c0</a>
+</td>
+<td>
+lukeholman
+</td>
+<td>
+2019-03-07
+</td>
+<td>
+new theme
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -18106,7 +18111,7 @@ GO: Biological process
 0.0165403
 </td>
 <td style="text-align:right;">
-0.0997411
+0.0984543
 </td>
 <td style="text-align:right;">
 -1.652894
@@ -18158,7 +18163,7 @@ GO: Biological process
 0.0447761
 </td>
 <td style="text-align:right;">
-0.1410935
+0.1393728
 </td>
 <td style="text-align:right;">
 -1.457013
@@ -18262,7 +18267,7 @@ GO: Cellular component
 0.0444840
 </td>
 <td style="text-align:right;">
-0.1410935
+0.1393728
 </td>
 <td style="text-align:right;">
 -1.464557
@@ -18288,7 +18293,7 @@ GO: Cellular component
 0.0488951
 </td>
 <td style="text-align:right;">
-0.1446433
+0.1438091
 </td>
 <td style="text-align:right;">
 1.232225
@@ -18418,7 +18423,7 @@ GO: Molecular function
 0.0124725
 </td>
 <td style="text-align:right;">
-0.0917095
+0.0922074
 </td>
 <td style="text-align:right;">
 1.537033
@@ -18620,7 +18625,7 @@ GO: Biological process
 0.0121690
 </td>
 <td style="text-align:right;">
-0.0917095
+0.0922074
 </td>
 <td style="text-align:right;">
 1.588706
@@ -18672,7 +18677,7 @@ GO: Biological process
 0.0417827
 </td>
 <td style="text-align:right;">
-0.1374432
+0.1365156
 </td>
 <td style="text-align:right;">
 -1.376223
@@ -18695,13 +18700,13 @@ GO: Biological process
 <a href="GO:0042742" class="uri">GO:0042742</a>
 </td>
 <td style="text-align:right;">
-0.0444419
+0.0439150
 </td>
 <td style="text-align:right;">
-0.1410935
+0.1393728
 </td>
 <td style="text-align:right;">
-1.475695
+1.475540
 </td>
 <td style="text-align:left;">
 406143 406140 100576745 725074
@@ -19062,7 +19067,7 @@ GO: Molecular function
 0.0451943
 </td>
 <td style="text-align:right;">
-0.1410935
+0.1393728
 </td>
 <td style="text-align:right;">
 1.394571
@@ -19088,7 +19093,7 @@ GO: Molecular function
 0.0468442
 </td>
 <td style="text-align:right;">
-0.1413475
+0.1396648
 </td>
 <td style="text-align:right;">
 1.460218
@@ -19140,7 +19145,7 @@ KEGG:00910
 0.0149136
 </td>
 <td style="text-align:right;">
-0.0981156
+0.0980780
 </td>
 <td style="text-align:right;">
 1.563268
@@ -19310,13 +19315,39 @@ probable U3 small nucleolar RNA-associated protein 11; WD repeat-containing prot
 GO: Biological process
 </td>
 <td style="text-align:left;">
+<a href="GO:0042742" class="uri">GO:0042742</a>
+</td>
+<td style="text-align:right;">
+0.0153002
+</td>
+<td style="text-align:right;">
+0.0980780
+</td>
+<td style="text-align:right;">
+1.552196
+</td>
+<td style="text-align:left;">
+406142 406143
+</td>
+<td style="text-align:left;">
+defense response to bacterium
+</td>
+<td style="text-align:left;">
+hymenoptaecin; defensin 1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GO: Biological process
+</td>
+<td style="text-align:left;">
 <a href="GO:0006633" class="uri">GO:0006633</a>
 </td>
 <td style="text-align:right;">
 0.0161826
 </td>
 <td style="text-align:right;">
-0.0997411
+0.0984543
 </td>
 <td style="text-align:right;">
 1.582131
@@ -19329,32 +19360,6 @@ fatty acid biosynthetic process
 </td>
 <td style="text-align:left;">
 elongation of very long chain fatty acids protein AAEL008004-like; elongation of very long chain fatty acids protein 1-like; elongation of very long chain fatty acids protein 6; elongation of very long chain fatty acids protein AAEL008004; acyl-CoA Delta(11) desaturase; very-long-chain (3R)-3-hydroxyacyl-CoA dehydratase 2; elongation of very long chain fatty acids protein AAEL008004-like
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-GO: Biological process
-</td>
-<td style="text-align:left;">
-<a href="GO:0042742" class="uri">GO:0042742</a>
-</td>
-<td style="text-align:right;">
-0.0167565
-</td>
-<td style="text-align:right;">
-0.0997411
-</td>
-<td style="text-align:right;">
-1.548288
-</td>
-<td style="text-align:left;">
-406142 406143
-</td>
-<td style="text-align:left;">
-defense response to bacterium
-</td>
-<td style="text-align:left;">
-hymenoptaecin; defensin 1
 </td>
 </tr>
 <tr>
@@ -19547,13 +19552,13 @@ GO: Molecular function
 <a href="GO:0004984" class="uri">GO:0004984</a>
 </td>
 <td style="text-align:right;">
-0.0120537
+0.0127138
 </td>
 <td style="text-align:right;">
-0.0917095
+0.0922074
 </td>
 <td style="text-align:right;">
-1.443650
+1.440536
 </td>
 <td style="text-align:left;">
 725384 725205
@@ -19576,7 +19581,7 @@ GO: Molecular function
 0.0162086
 </td>
 <td style="text-align:right;">
-0.0997411
+0.0984543
 </td>
 <td style="text-align:right;">
 1.542631
@@ -19836,7 +19841,7 @@ KEGG:04080
 0.0118545
 </td>
 <td style="text-align:right;">
-0.0917095
+0.0922074
 </td>
 <td style="text-align:right;">
 1.560081
@@ -19940,7 +19945,7 @@ KEGG:00630
 0.0495742
 </td>
 <td style="text-align:right;">
-0.1446433
+0.1441111
 </td>
 <td style="text-align:right;">
 1.413485
@@ -20090,7 +20095,7 @@ GO: Cellular component
 0.0412082
 </td>
 <td style="text-align:right;">
-0.1373608
+0.1365156
 </td>
 <td style="text-align:right;">
 1.321417
@@ -20113,13 +20118,13 @@ GO: Cellular component
 <a href="GO:0005680" class="uri">GO:0005680</a>
 </td>
 <td style="text-align:right;">
-0.0497573
+0.0420468
 </td>
 <td style="text-align:right;">
-0.1446433
+0.1365156
 </td>
 <td style="text-align:right;">
--1.486516
+-1.494161
 </td>
 <td style="text-align:left;">
 413499 413293 409810
@@ -20298,7 +20303,7 @@ GO: Molecular function
 0.0457143
 </td>
 <td style="text-align:right;">
-0.1410935
+0.1393728
 </td>
 <td style="text-align:right;">
 -1.483124
@@ -20402,7 +20407,7 @@ KEGG:00260
 0.0469274
 </td>
 <td style="text-align:right;">
-0.1413475
+0.1396648
 </td>
 <td style="text-align:right;">
 1.401367
@@ -20948,13 +20953,13 @@ GO: Biological process
 <a href="GO:0007034" class="uri">GO:0007034</a>
 </td>
 <td style="text-align:right;">
-0.0212540
+0.0205327
 </td>
 <td style="text-align:right;">
 0.1145620
 </td>
 <td style="text-align:right;">
--1.598898
+-1.584054
 </td>
 <td style="text-align:left;">
 550738 411857 410607 410883
@@ -20980,7 +20985,7 @@ GO: Biological process
 0.0449834
 </td>
 <td style="text-align:right;">
-0.1544974
+0.1511387
 </td>
 <td style="text-align:right;">
 1.363095
@@ -21009,7 +21014,7 @@ GO: Biological process
 0.0476190
 </td>
 <td style="text-align:right;">
-0.1544974
+0.1511387
 </td>
 <td style="text-align:right;">
 -1.428849
@@ -21035,13 +21040,13 @@ GO: Cellular component
 <a href="GO:0005886" class="uri">GO:0005886</a>
 </td>
 <td style="text-align:right;">
-0.0020002
+0.0032006
 </td>
 <td style="text-align:right;">
-0.0656451
+0.0725780
 </td>
 <td style="text-align:right;">
-1.544774
+1.537862
 </td>
 <td style="text-align:left;">
 100578210 100577938 100577446 100577755 725297 100578083 100577334 411760 100578230 725205 551782
@@ -21180,13 +21185,13 @@ GO: Molecular function
 <a href="GO:0004252" class="uri">GO:0004252</a>
 </td>
 <td style="text-align:right;">
-0.0488148
+0.0466352
 </td>
 <td style="text-align:right;">
-0.1549339
+0.1511387
 </td>
 <td style="text-align:right;">
-1.398450
+1.396669
 </td>
 <td style="text-align:left;">
 726126 410438 724145 413645 724917 410894 724308 411358 409143 726718
@@ -21386,7 +21391,7 @@ KEGG:00190
 0.0024240
 </td>
 <td style="text-align:right;">
-0.0656451
+0.0725780
 </td>
 <td style="text-align:right;">
 1.681785
@@ -21415,7 +21420,7 @@ KEGG:00860
 0.0026977
 </td>
 <td style="text-align:right;">
-0.0656451
+0.0725780
 </td>
 <td style="text-align:right;">
 1.681653
@@ -21502,7 +21507,7 @@ KEGG:01100
 0.0467953
 </td>
 <td style="text-align:right;">
-0.1544974
+0.1511387
 </td>
 <td style="text-align:right;">
 1.162914
@@ -21734,7 +21739,7 @@ GO: Molecular function
 0.0472047
 </td>
 <td style="text-align:right;">
-0.1544974
+0.1511387
 </td>
 <td style="text-align:right;">
 1.289588
