@@ -1,12 +1,15 @@
 ## Click [here](https://lukeholman.github.io/queen-pheromone-RNAseq) to view the HTML report
 
+## Bioinformatics
 
-## Main .Rmd file
-All of our R statistical analyses are described in the `queen_pheromone.Rmd` file, which can be used to recreate all the figures, tables and analyses presented in the paper and supplementary material. To reproduce our analysis, clone this Github repository, open the .Rmd file, install all the R packages you don't already have, and then Run All or press the "knit" button in R studio.
+All the scripts used for bioinformatics can be viewed in the HTML report, or in the `bioinformatics scripts` directory. 
 
+## Statistical analyses and plots
 
-## Database containing most of the necessary data
-We created a sqlite3 database using `import_data.sh` prior to analysis in R. The component spreadsheets (tables) from this database are also available as .csv files in the directory `component spreadsheets of queen_pheromone.db` if you prefer to access them that way.
+All the R scripts for our statistics and plots can be viewed in the HTML report, or in `analysis/statistical-analysis.Rmd`.
+
+## Description of the data
+We created a sqlite3 database (`data/queen_pheromone.db`) using the script `import_data.sh`, which was then analysed in R. The component spreadsheets (tables) of this database are also available as .csv files in `data/component spreadsheets of queen_pheromone.db` if you prefer to access them that way.
 
 The spreadsheet has the following tables:
 
@@ -28,7 +31,7 @@ The spreadsheet has the following tables:
 
 ## Other files
 
-### Files in `apis_gene_comparisons` directory
+### Files in `data/apis_gene_comparisons` directory
 
 This directory contains files kindly shared with us by other research groups, all of which were used to compare our _Apis_ gene-level variables with other, previously-measured variables such as DNA methylation. 
 

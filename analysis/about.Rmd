@@ -5,4 +5,4 @@ output:
     toc: false
 ---
 
-Describe your project.
+Code and data for the publication "Comparative transcriptomics of social insect queen pheromones" (Holman et al. 2019, _Nature Communications_).
